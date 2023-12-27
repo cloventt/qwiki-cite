@@ -34,6 +34,46 @@ describe("page scrape metadata conversion", () => {
                 accessDate: '2023-12-25',
             },
         },
+        {
+            description: 'adds title',
+            input: {
+                title: 'page title'
+            },
+            expected: {
+                title: 'page title',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'adds language',
+            input: {
+                language: 'en'
+            },
+            expected: {
+                language: 'en',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'adds website',
+            input: {
+                provider: 'Metal Madness Magazine'
+            },
+            expected: {
+                website: 'Metal Madness Magazine',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'adds published date',
+            input: {
+                published: '2020-04-19T07:14:23.542+1300'
+            },
+            expected: {
+                date: '2020-04-19',
+                accessDate: '2023-12-25',
+            },
+        },
     ];
 
     spec.forEach((s) => {

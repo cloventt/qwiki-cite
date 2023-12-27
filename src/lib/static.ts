@@ -70,7 +70,6 @@ export class QWikiCite {
       citationTemplate.date = metadata.published.slice(0, 10).toString();
     }
 
-
     citationTemplate.accessDate = new Date().toISOString().slice(0, 10);
 
     return citationTemplate;
