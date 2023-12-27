@@ -1,0 +1,35 @@
+{
+    "manifest_version": 2,
+    "name": "QWiki-Cite",
+    "version": "0.1.0",
+    "description": "Instantly generate a Wikipedia citation template for the current website.",
+    "permissions": [
+      "tabs"
+    ],
+    "icons": {
+      "64": "assets/icon/64.png",
+      "128": "assets/icon/128.png",
+      "256": "assets/icon/256.png"
+    },
+    "browser_action": {
+      "default_icon": {
+        "16": "assets/icon/16.png",
+        "32": "assets/icon/32.png"
+      },
+      "default_title": "QWiki Cite",
+      "default_popup": "index.html",
+      "theme_icons": [{
+        "light": "assets/icon/16-light.png",
+        "dark": "assets/icon/16.png",
+        "size": 16
+      }, {
+        "light": "assets/icon/32-light.png",
+        "dark": "assets/icon/32.png",
+        "size": 32
+      }, {
+        "light": "assets/icon/64-light.png",
+        "dark": "assets/icon/64.png",
+        "size": 64
+      }]
+    }
+  }
