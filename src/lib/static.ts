@@ -55,6 +55,8 @@ export class QWikiCite {
   /**
    * Convert a camelCase string to kebab-case
    * 
+   * Shamelessly stolen from https://stackoverflow.com/a/67243723
+   * 
    * @param str string with camelCase text
    * @returns string with kebab-case text
    */
@@ -62,6 +64,8 @@ export class QWikiCite {
 
   /**
    * Convert a kebab-case string to Camelcase
+   * 
+   * Shamelessly stolen from https://stackoverflow.com/a/60738940
    * 
    * @param str string with kebab-case text
    * @returns string with camelCase text
