@@ -1,7 +1,7 @@
 export interface CitationTemplate {
 
-  url: string;
-  title: string;
+  url?: string;
+  title?: string;
   urlAccess?: string;
   website?: string;
   author?: string;
