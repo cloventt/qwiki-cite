@@ -26,6 +26,6 @@
     "test": "ts-mocha ./test/**/*",
     "build": "rm -rf dist .cache .parcel-cache && parcel build --no-cache src/manifest.json",
     "watch": "parcel watch --host localhost src/manifest.json",
-    "bundle": "yarn test && yarn build && zip -r -X qwiki-cite-$npm_package_version.zip ./dist"
+    "bundle": "yarn test && yarn build && zip -j qwiki-cite-$npm_package_version.zip ./dist/*"
   }
 }
