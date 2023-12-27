@@ -61,30 +61,10 @@ function main() {
             }
             console.debug('Got a page scrape result', pageScrapeResult);
 
-            const citationTemplate: CitationTemplate = {
-                url,
-                title: pageScrapeResult.title,
-                language: pageScrapeResult.language,
-                website: pageScrapeResult.provider,
-            };
+            const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
+            citationTemplate.url = url;
 
-            // TODO: author detection needs to be improved a lot
-            if (pageScrapeResult.author != null) {
-                const splitAuthor = pageScrapeResult.author.toString().split(' ')
-                if (splitAuthor.length == 2) {
-                    citationTemplate.first = splitAuthor[0];
-                    citationTemplate.last = splitAuthor[splitAuthor.length - 1];
-                } else if (splitAuthor.length > 0) {
-                    citationTemplate.author = pageScrapeResult.author as string;
-                }
-            }
-
-            if (pageScrapeResult.published != null) {
-                citationTemplate.date = pageScrapeResult.published.slice(0, 10).toString();
-            }
-
-
-            citationTemplate.accessDate = new Date().toISOString().slice(0, 10);
+            console.debug('Generated citation template data', citationTemplate);
 
             updatePage(citationTemplate);
 

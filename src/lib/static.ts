@@ -1,3 +1,4 @@
+import { MetaData } from 'metadata-scraper/lib/types';
 import { CitationTemplate } from './ICitationTemplate';
 
 export class QWikiCite {
@@ -23,7 +24,7 @@ export class QWikiCite {
 
     const blob = compact ? result.join('|') : result.join('\n  |');
 
-    return '{{' + blob + (compact ? '':'\n') + '}}';
+    return '{{' + blob + (compact ? '' : '\n') + '}}';
   }
 
   /**
@@ -40,6 +41,39 @@ export class QWikiCite {
       result[this.camelize(key.trim())] = this.esc(value.trim());
     })
     return result;
+  }
+
+  /**
+   * Convert page metadata to citation template data
+   * @param metadata metadata from page scraper
+   * @returns citation template data object
+   */
+  public static scrapedMetadataToCitation(metadata: MetaData): CitationTemplate {
+    const citationTemplate: CitationTemplate = {
+      title: metadata.title,
+      language: metadata.language,
+      website: metadata.provider,
+    };
+
+    // TODO: author detection needs to be improved a lot
+    if (metadata.author != null) {
+      const splitAuthor = metadata.author.toString().split(' ')
+      if (splitAuthor.length == 2) {
+        citationTemplate.first = splitAuthor[0];
+        citationTemplate.last = splitAuthor[splitAuthor.length - 1];
+      } else if (splitAuthor.length > 0) {
+        citationTemplate.author = metadata.author as string;
+      }
+    }
+
+    if (metadata.published != null) {
+      citationTemplate.date = metadata.published.slice(0, 10).toString();
+    }
+
+
+    citationTemplate.accessDate = new Date().toISOString().slice(0, 10);
+
+    return citationTemplate;
   }
 
   /**
@@ -70,6 +104,6 @@ export class QWikiCite {
    * @param str string with kebab-case text
    * @returns string with camelCase text
    */
-  public static camelize = (s: string): string => s.replace(/-./g, x=>x[1].toUpperCase())
+  public static camelize = (s: string): string => s.replace(/-./g, x => x[1].toUpperCase())
 }
 
