@@ -1,3 +1,9 @@
+
+/**
+ * Represents ALL the values that can be set in a
+ * {{cite web}} template. In reality most of these
+ * are probably not going to be used.
+ */
 export interface CitationTemplate {
 
   url?: string;

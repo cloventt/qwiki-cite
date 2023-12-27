@@ -26,8 +26,12 @@ function updatePage(citationTemplate: CitationTemplate) {
 
     snippetSlot.setAttribute('rows', `${Object.keys(merged).length + 2}`);
     snippetSlot.textContent = QWikiCite.generateCitationString(merged, false);
+    // TODO: persist the value to localstorage
 }
 
+/**
+ * Grab the current citation template and dump it to the clipboard.
+ */
 function copyToClipboard() {
     const snippetSlot = document.getElementById('snippet-slot') as HTMLInputElement;
 
@@ -39,8 +43,11 @@ function copyToClipboard() {
 
 function main() {
     document.getElementById('copy-to-clipboard')?.addEventListener('click', () => {
+        console.debug('Copying current value to clipboard');
         copyToClipboard();
     });
+
+    // TODO: check if we already have a value in localstorage so we can skip scraping
 
     browser.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs) => {
         if (tabs.length < 1) {
@@ -49,10 +56,10 @@ function main() {
         }
         const url = tabs[0].url;
         browser.tabs.sendMessage(tabs[0].id!!, {}).then((pageScrapeResult: MetaData) => {
-            console.log(pageScrapeResult);
             if (pageScrapeResult == null) {
                 return;
             }
+            console.debug('Got a page scrape result', pageScrapeResult);
 
             const citationTemplate: CitationTemplate = {
                 url,
@@ -61,6 +68,7 @@ function main() {
                 website: pageScrapeResult.provider,
             };
 
+            // TODO: author detection needs to be improved a lot
             if (pageScrapeResult.author != null) {
                 const splitAuthor = pageScrapeResult.author.toString().split(' ')
                 if (splitAuthor.length == 2) {

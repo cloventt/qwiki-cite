@@ -86,5 +86,6 @@ const getMetaData = function (inputOptions: Partial<Options> = {}) {
 }
 
 Browser.runtime.onMessage.addListener(() => {
+    console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
     return Promise.resolve(getMetaData());
 });
