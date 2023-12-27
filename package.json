@@ -6,12 +6,15 @@
   "dependencies": {
     "metadata-scraper": "^0.2.61",
     "parcel": "^2.10.3",
+    "ts-mocha": "^10.0.0",
     "typescript": "^5.3.3",
     "web-ext": "^7.9.0",
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
     "@parcel/config-webextension": "^2.10.3",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
     "@types/webextension-polyfill": "^0.10.7",
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
@@ -20,6 +23,7 @@
     "url": "^0.11.0"
   },
   "scripts": {
+    "test": "ts-mocha ./test/**/*",
     "build": "parcel build src/manifest.json",
     "watch": "parcel watch src/manifest.json"
   }

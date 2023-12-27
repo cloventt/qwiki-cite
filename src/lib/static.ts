@@ -10,10 +10,12 @@ export class QWikiCite {
     result.push('cite web');
 
     (Object.keys(pageDetails) as Array<keyof CitationTemplate>).forEach((key) => {
-      result.push(`${this.kebabize(key)}=${this.esc(pageDetails[key])}`);
+      if (pageDetails[key] != null) {
+        result.push(`${this.kebabize(key)}=${this.esc(pageDetails[key])}`);
+      }
     });
 
-    const blob = compact ? result.join('|') : result.join('\n    |');
+    const blob = compact ? result.join('|') : result.join('\n  |');
 
     return '{{' + blob + (compact ? '':'\n') + '}}';
   }
@@ -28,12 +30,12 @@ export class QWikiCite {
     return result;
   }
 
-  private static esc(s: string): string {
+  public static esc(s: string): string {
     return s.replace(/[|]/g, '&#124;').replace(/[{]/g, '&#123;').replace(/[}]/g, '&#125;').replace(/[=]/g, '&#61;')
   }
 
-  private static kebabize = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? '-' : '') + $.toLowerCase());
+  public static kebabize = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? '-' : '') + $.toLowerCase());
 
-  private static camelize = s => s.replace(/-./g, x=>x[1].toUpperCase())
+  public static camelize = s => s.replace(/-./g, x=>x[1].toUpperCase())
 }
 
