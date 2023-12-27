@@ -20,6 +20,8 @@ export interface CitationTemplate {
   archiveDate?: string;
 
   authorLink?: string;
+  last1?: string;
+  first1?: string;
   last2?: string;
   first2?: string;
   authorLink2?: string;

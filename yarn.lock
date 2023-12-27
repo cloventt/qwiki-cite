@@ -3976,6 +3976,11 @@ parent-module@^1.0.0:
   dependencies:
     callsites "^3.0.0"
 
+parse-full-name@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/parse-full-name/-/parse-full-name-1.2.6.tgz#97e2643c0167b79ca404dab254ea79e89b025704"
+  integrity sha512-uIaENXJFmZfzulBndhHJayi7ZEifJ1bXKaWYmySa04EmMX7eIcsufiAgWTYiJqWRa/Sq7JWPGtCIXFAoUfF7gw==
+
 parse-json@6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-6.0.2.tgz#6bf79c201351cc12d5d66eba48d5a097c13dc200"

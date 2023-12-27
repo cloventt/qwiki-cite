@@ -45,6 +45,66 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
+            description: 'strips suffixes off titles with hyphen separators',
+            input: {
+                title: 'Sport psychology in German football making \'progress\' - DW - 12/27/2023'
+            },
+            expected: {
+                title: 'Sport psychology in German football making \'progress\'',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'strips suffixes off titles with weird unicode hyphen separators',
+            input: {
+                title: 'Sport psychology in German football making \'progress\' – DW – 12/27/2023'
+            },
+            expected: {
+                title: 'Sport psychology in German football making \'progress\'',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'strips suffixes off titles with bar separators',
+            input: {
+                title: 'Sport psychology in German football making \'progress\' | DW | 12/27/2023'
+            },
+            expected: {
+                title: 'Sport psychology in German football making \'progress\'',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'strips prefixes off titles with hyphen separators',
+            input: {
+                title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
+            },
+            expected: {
+                title: 'Sport psychology in German football making \'progress\'',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'strips prefixes off titles with weird unicode hyphen separators',
+            input: {
+                title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
+            },
+            expected: {
+                title: 'Sport psychology in German football making \'progress\'',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'strips prefixes off titles with bar separators',
+            input: {
+                title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
+            },
+            expected: {
+                title: 'Sport psychology in German football making \'progress\'',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
             description: 'adds language',
             input: {
                 language: 'en'
@@ -71,6 +131,122 @@ describe("page scrape metadata conversion", () => {
             },
             expected: {
                 date: '2020-04-19',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'parses author into first and last name',
+            input: {
+                author: 'David Palmer'
+            },
+            expected: {
+                first: 'David',
+                last: 'Palmer',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores middle names',
+            input: {
+                author: 'John Satchmo Tewilliger'
+            },
+            expected: {
+                first: 'John',
+                last: 'Tewilliger',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'handles multiple authors separated with \'and\'',
+            input: {
+                author: 'David Palmer and John Tewilliger'
+            },
+            expected: {
+                first1: 'David',
+                last1: 'Palmer',
+                first2: 'John',
+                last2: 'Tewilliger',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'handles multiple authors separated with \'&\'',
+            input: {
+                author: 'David Palmer & John Tewilliger'
+            },
+            expected: {
+                first1: 'David',
+                last1: 'Palmer',
+                first2: 'John',
+                last2: 'Tewilliger',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores titles in author names',
+            input: {
+                author: 'Dr. Richard Hitchings'
+            },
+            expected: {
+                first: 'Richard',
+                last: 'Hitchings',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'handles syndicated authors',
+            input: {
+                author: 'Joe Goldberg of Reuters'
+            },
+            expected: {
+                first: 'Joe',
+                last: 'Goldberg',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'gives up on generic journalist author',
+            input: {
+                author: 'Staff journalists'
+            },
+            expected: {
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'gives up on generic journalist author',
+            input: {
+                author: 'Staff'
+            },
+            expected: {
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'gives up when the author is just the website name',
+            input: {
+                provider: 'Stuff',
+                author: 'Stuff writers'
+            },
+            expected: {
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores quotes in author name',
+            input: {
+                author: '\'\''
+            },
+            expected: {
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores random unparseable garbage in author name',
+            input: {
+                author: 'fdyugifudgfkhreavbvufdsj'
+            },
+            expected: {
                 accessDate: '2023-12-25',
             },
         },
