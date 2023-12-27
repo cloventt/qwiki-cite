@@ -49,11 +49,11 @@ export class QWikiCite {
    * @returns citation template data object
    */
   public static scrapedMetadataToCitation(metadata: MetaData): CitationTemplate {
-    const citationTemplate: CitationTemplate = {
-      title: metadata.title,
-      language: metadata.language,
-      website: metadata.provider,
-    };
+    const citationTemplate: CitationTemplate = {};
+
+    if (metadata.title != null) citationTemplate.title = metadata.title
+    if (metadata.language != null) citationTemplate.language = metadata.language
+    if (metadata.provider != null) citationTemplate.website = metadata.provider
 
     // TODO: author detection needs to be improved a lot
     if (metadata.author != null) {
