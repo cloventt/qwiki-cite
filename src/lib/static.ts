@@ -6,12 +6,12 @@ export class QWikiCite {
   private static parseRegex = /\s?([\w-]*)\s?=\s?([^\n|}]*)\s?/g;
 
   public static generateCitationString(pageDetails: CitationTemplate, compact: boolean = true): string {
-    const result = [];
+    const result: string[] = [];
     result.push('cite web');
 
     (Object.keys(pageDetails) as Array<keyof CitationTemplate>).forEach((key) => {
       if (pageDetails[key] != null) {
-        result.push(`${this.kebabize(key)}=${this.esc(pageDetails[key])}`);
+        result.push(`${this.kebabize(key)}=${this.esc(pageDetails[key]!!)}`);
       }
     });
 

@@ -38,13 +38,17 @@ function copyToClipboard() {
 }
 
 function main() {
-    document.getElementById('copy-to-clipboard').addEventListener('click', () => {
+    document.getElementById('copy-to-clipboard')?.addEventListener('click', () => {
         copyToClipboard();
     });
 
     browser.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs) => {
+        if (tabs.length < 1) {
+            console.error('Did not find an active tab to work on, aborting')
+            return;
+        }
         const url = tabs[0].url;
-        browser.tabs.sendMessage(tabs[0].id, {}).then((pageScrapeResult: MetaData) => {
+        browser.tabs.sendMessage(tabs[0].id!!, {}).then((pageScrapeResult: MetaData) => {
             console.log(pageScrapeResult);
             if (pageScrapeResult == null) {
                 return;
