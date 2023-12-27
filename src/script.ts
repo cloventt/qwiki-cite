@@ -85,7 +85,7 @@ function main() {
                         const ts = waybackAnswer["archived_snapshots"]["closest"]["timestamp"]
                         updatePage({
                             archiveUrl: waybackAnswer["archived_snapshots"]["closest"]["url"],
-                            archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}}`,
+                            archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
                         })
                     }
                 })

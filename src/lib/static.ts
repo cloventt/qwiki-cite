@@ -29,7 +29,7 @@ export class QWikiCite {
   }
 
   private static esc(s: string): string {
-    return s.replace('|', '&#124;').replace('{', '&#123;').replace('}', '&#125;').replace('=', '&#61;')
+    return s.replace(/[|]/g, '&#124;').replace(/[{]/g, '&#123;').replace(/[}]/g, '&#125;').replace(/[=]/g, '&#61;')
   }
 
   private static kebabize = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? '-' : '') + $.toLowerCase());
