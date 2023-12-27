@@ -1,4 +1,4 @@
-import { CitationTemplate } from './citationTemplate';
+import { CitationTemplate } from './ICitationTemplate';
 
 export class QWikiCite {
 

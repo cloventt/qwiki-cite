@@ -4,6 +4,7 @@
   "description": "Instantly generate a Wikipedia citation template for the current website",
   "license": " GPL-3.0-only",
   "dependencies": {
+    "metadata-scraper": "^0.2.61",
     "parcel": "^2.10.3",
     "typescript": "^5.3.3",
     "web-ext": "^7.9.0",
@@ -13,11 +14,13 @@
     "@parcel/config-webextension": "^2.10.3",
     "@types/webextension-polyfill": "^0.10.7",
     "chai": "^4.3.10",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "parcel-namer-hashless": "^1.0.5",
+    "punycode": "^1.4.1",
+    "url": "^0.11.0"
   },
   "scripts": {
-    "prebuild": "rm -rf dist/*",
-    "build": "parcel build src/manifest.json --config @parcel/config-webextension",
-    "watch": "parcel watch src/manifest.json --config @parcel/config-webextension"
+    "build": "parcel build src/manifest.json",
+    "watch": "parcel watch src/manifest.json"
   }
 }

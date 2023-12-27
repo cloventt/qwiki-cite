@@ -4,7 +4,15 @@
     "version": "0.1.0",
     "description": "Instantly generate a Wikipedia citation template for the current website.",
     "permissions": [
-      "tabs"
+      "tabs",
+      "activeTab",
+      "scripting"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["parser.ts"]
+      }
     ],
     "icons": {
       "64": "assets/icon/64.png",

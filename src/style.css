@@ -12,4 +12,7 @@ textarea {
   background-color: #f8f8f8;
   font-size: normal;
   resize: auto;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: scroll;
 }
