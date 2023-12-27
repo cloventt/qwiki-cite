@@ -25,6 +25,6 @@
   "scripts": {
     "test": "ts-mocha ./test/**/*",
     "build": "rm -rf dist .cache .parcel-cache && parcel build --no-cache src/manifest.json",
-    "watch": "parcel watch src/manifest.json"
+    "watch": "parcel watch --host localhost src/manifest.json"
   }
 }
