@@ -1,4 +1,8 @@
 # QWiki-Cite
+**[Install on Firefox](https://addons.mozilla.org/en-US/firefox/addon/qwiki-cite/)**
+
+![](screenshot.png)
+
 This is a tiny browser extension that can automatically generate a Wikipedia `{{cite web}}`
 template for whatever page you are currently on.
 
