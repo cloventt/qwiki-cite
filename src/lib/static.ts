@@ -82,9 +82,12 @@ export class QWikiCite {
       return suspiciousStrings.every((s) => possibleName.toLowerCase().indexOf(s) < 0);
     }
 
-    // TODO: author detection needs to be improved a lot
     if (metadata.author != null) {
-      const [firstAuthor, secondAuthor] = (metadata.author as string).split(/\sand|[&]|[|]|via|of\s/)
+      // remove anything in brackets (might be a job title)
+      const stripped = (metadata.author as string).trim().replace(/[([].*[)\]]/g, '')
+
+      // split into multiple authors
+      const [firstAuthor, secondAuthor] = stripped.split(/\sand|[&]|[|]|via|of\s/)
 
       if (firstAuthor != null && isMaybeAName(firstAuthor, citationTemplate.website)) {
         const [first1, last1] = parseAuthor(firstAuthor);
