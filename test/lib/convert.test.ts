@@ -65,7 +65,7 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'strips suffixes off titles with bar separators',
+            description: 'strips suffixes off titles with pipe separators',
             input: {
                 title: 'Sport psychology in German football making \'progress\' | DW | 12/27/2023'
             },
@@ -77,7 +77,7 @@ describe("page scrape metadata conversion", () => {
         {
             description: 'strips prefixes off titles with hyphen separators',
             input: {
-                title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
+                title: 'DW - 12/27/2023 - Sport psychology in German football making \'progress\''
             },
             expected: {
                 title: 'Sport psychology in German football making \'progress\'',
@@ -87,7 +87,7 @@ describe("page scrape metadata conversion", () => {
         {
             description: 'strips prefixes off titles with weird unicode hyphen separators',
             input: {
-                title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
+                title: 'DW – 12/27/2023 – Sport psychology in German football making \'progress\''
             },
             expected: {
                 title: 'Sport psychology in German football making \'progress\'',
@@ -95,7 +95,7 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'strips prefixes off titles with bar separators',
+            description: 'strips prefixes off titles with pipe separators',
             input: {
                 title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
             },

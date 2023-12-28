@@ -53,7 +53,13 @@ export class QWikiCite {
   public static scrapedMetadataToCitation(metadata: MetaData): CitationTemplate {
     const citationTemplate: CitationTemplate = {};
 
-    if (metadata.title != null) citationTemplate.title = metadata.title
+    if (metadata.title != null) {
+      const cleanedTitle = (metadata.title as string).split(/[|><\-*–]/).reduce(
+        (savedText, text) => (text.length > savedText.length ? text : savedText),
+        '',
+      );
+      citationTemplate.title = cleanedTitle.trim();
+    }
     if (metadata.language != null) citationTemplate.language = metadata.language
     if (metadata.provider != null) citationTemplate.website = metadata.provider
 
@@ -74,6 +80,7 @@ export class QWikiCite {
         'writer',
         'staff',
         'journalist',
+        'reporter',
         'http',
       ];
 
