@@ -8,25 +8,33 @@ function isEmpty(obj) {
     return true;
 }
 
+async function getStoredValue(url: string): Promise<CitationTemplate> {
+    const storedData: Record<string, CitationTemplate> = await browser.storage.session.get(url);
+    return storedData[url] || {};
+}
 
 /**
  * Update the cite web template in the text box, preserving anything that is 
  * already there.
  * @param citationTemplate the new values to add
  */
-function updatePage(citationTemplate: CitationTemplate) {
-    console.debug('Updating the textarea with new values', citationTemplate)
-    const snippetSlot = document.getElementById('snippet-slot') as HTMLInputElement;
+async function updatePage(citationTemplate: CitationTemplate) {
 
-    const currentValue = snippetSlot.value;
-    const parsedCurrentValue = QWikiCite.parseCitationString(currentValue);
+    const currentValue = await getStoredValue(citationTemplate.url);
 
-    const merged = {...parsedCurrentValue, ...citationTemplate}
+    const merged = { ...currentValue, ...citationTemplate };
     console.debug('Settled on final merged value', merged);
 
-    snippetSlot.setAttribute('rows', `${Object.keys(merged).length + 2}`);
-    snippetSlot.textContent = QWikiCite.generateCitationString(merged, false);
-    // TODO: persist the value to localstorage
+    browser.storage.session.set({
+        [merged.url]: merged,
+    });
+}
+
+function displayData(citationData: CitationTemplate) {
+    console.debug('Printing to textarea', citationData)
+    const snippetSlot = document.getElementById('snippet-slot') as HTMLInputElement;
+    snippetSlot.setAttribute('rows', `${Object.keys(citationData).length + 2}`);
+    snippetSlot.textContent = QWikiCite.generateCitationString(citationData, false);
 }
 
 /**
@@ -41,53 +49,64 @@ function copyToClipboard() {
     navigator.clipboard.writeText(QWikiCite.generateCitationString(parsedCurrentValue));
 }
 
-function main() {
+async function main() {
     document.getElementById('copy-to-clipboard')?.addEventListener('click', () => {
         console.debug('Copying current value to clipboard');
         copyToClipboard();
     });
 
-    // TODO: check if we already have a value in localstorage so we can skip scraping
 
-    browser.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs) => {
-        if (tabs.length < 1) {
-            console.error('Did not find an active tab to work on, aborting')
+    const tabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tabs.length < 1) {
+        console.error('Did not find an active tab to work on, aborting')
+        return;
+    }
+    const url = tabs[0].url;
+
+    browser.storage.session.onChanged.addListener((storageChanges) => {
+        if (storageChanges[url] != null) {
+            displayData(storageChanges[url].newValue);
+        }
+    });
+
+    const previousData = await getStoredValue(url);
+
+    if (!isEmpty(previousData)) {
+        console.debug('Found a previously stored version of the data', previousData);
+        await updatePage(previousData);
+    } else {
+        console.debug('No previous data found in session storage, scraping page instead');
+        const pageScrapeResult: MetaData = await browser.tabs.sendMessage(tabs[0].id!!, {});
+        if (pageScrapeResult == null) {
             return;
         }
-        const url = tabs[0].url;
-        browser.tabs.sendMessage(tabs[0].id!!, {}).then((pageScrapeResult: MetaData) => {
-            if (pageScrapeResult == null) {
-                return;
-            }
-            console.debug('Got a page scrape result', pageScrapeResult);
+        console.debug('Got a page scrape result', pageScrapeResult);
 
-            const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
-            citationTemplate.url = url;
+        const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
+        citationTemplate.url = url;
 
-            console.debug('Generated citation template data', citationTemplate);
+        console.debug('Generated citation template data', citationTemplate);
 
-            updatePage(citationTemplate);
+        await updatePage(citationTemplate);
+    }
 
-            console.debug('Looking for an archive on wayback')
-            fetch(`https://archive.org/wayback/available?url=${url}`).then((response) => {
-                const waybackJson = response.json();
-                waybackJson.then((waybackAnswer) => {
-                    console.log('Found an archive on wayback', waybackAnswer);
-                    if (!isEmpty(waybackAnswer["archived_snapshots"])) {
-                        const ts = waybackAnswer["archived_snapshots"]["closest"]["timestamp"]
-                        updatePage({
-                            archiveUrl: waybackAnswer["archived_snapshots"]["closest"]["url"],
-                            archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
-                        })
-                    }
+    const currentValue = await getStoredValue(url);
+    if (currentValue.archiveUrl == null) {
+        console.debug('Looking for an archive on wayback')
+        fetch(`https://archive.org/wayback/available?url=${url}`).then(async (response) => {
+            const waybackAnswer = await response.json();
+            console.log('Found an archive on wayback', waybackAnswer);
+            if (!isEmpty(waybackAnswer["archived_snapshots"])) {
+                const ts = waybackAnswer["archived_snapshots"]["closest"]["timestamp"]
+                await updatePage({
+                    url,
+                    archiveUrl: waybackAnswer["archived_snapshots"]["closest"]["url"],
+                    archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
                 })
-            }).catch((err) => {
-                console.error('Error asking for archived version of page', err);
-            })
+            }
         })
+    }
 
-
-    });
 };
 main();
 
