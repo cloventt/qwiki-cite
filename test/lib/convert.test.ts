@@ -140,8 +140,8 @@ describe("page scrape metadata conversion", () => {
                 author: 'David Palmer'
             },
             expected: {
-                first: 'David',
-                last: 'Palmer',
+                first1: 'David',
+                last1: 'Palmer',
                 accessDate: '2023-12-25',
             },
         },
@@ -151,8 +151,8 @@ describe("page scrape metadata conversion", () => {
                 author: 'John Satchmo Tewilliger'
             },
             expected: {
-                first: 'John',
-                last: 'Tewilliger',
+                first1: 'John',
+                last1: 'Tewilliger',
                 accessDate: '2023-12-25',
             },
         },
@@ -188,8 +188,8 @@ describe("page scrape metadata conversion", () => {
                 author: 'Dr. Richard Hitchings'
             },
             expected: {
-                first: 'Richard',
-                last: 'Hitchings',
+                first1: 'Richard',
+                last1: 'Hitchings',
                 accessDate: '2023-12-25',
             },
         },
@@ -199,8 +199,8 @@ describe("page scrape metadata conversion", () => {
                 author: 'Joe Goldberg of Reuters'
             },
             expected: {
-                first: 'Joe',
-                last: 'Goldberg',
+                first1: 'Joe',
+                last1: 'Goldberg',
                 accessDate: '2023-12-25',
             },
         },
@@ -229,6 +229,7 @@ describe("page scrape metadata conversion", () => {
                 author: 'Stuff writers'
             },
             expected: {
+                website: 'Stuff',
                 accessDate: '2023-12-25',
             },
         },
@@ -245,6 +246,48 @@ describe("page scrape metadata conversion", () => {
             description: 'ignores random unparseable garbage in author name',
             input: {
                 author: 'fdyugifudgfkhreavbvufdsj'
+            },
+            expected: {
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores author role in brackets',
+            input: {
+                author: 'David Palmer (Senior Staff Writer)'
+            },
+            expected: {
+                first1: 'David',
+                last1: 'Palmer',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores author role in square brackets',
+            input: {
+                author: 'David Palmer [Senior Staff Writer]'
+            },
+            expected: {
+                first1: 'David',
+                last1: 'Palmer',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores author role after separator',
+            input: {
+                author: 'David Palmer | Senior Staff Writer'
+            },
+            expected: {
+                first1: 'David',
+                last1: 'Palmer',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'ignores a url in the author field',
+            input: {
+                author: 'https://nytimes.com/staff/joy-gay'
             },
             expected: {
                 accessDate: '2023-12-25',

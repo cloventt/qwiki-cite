@@ -1,5 +1,7 @@
 import { MetaData } from 'metadata-scraper/lib/types';
 import { CitationTemplate } from './ICitationTemplate';
+import { parseFullName } from 'parse-full-name';
+
 
 export class QWikiCite {
 
@@ -55,15 +57,51 @@ export class QWikiCite {
     if (metadata.language != null) citationTemplate.language = metadata.language
     if (metadata.provider != null) citationTemplate.website = metadata.provider
 
+    const parseAuthor = (input: string): [string?, string?] => {
+      // try and break the name into components
+      const parsedName = parseFullName(input);
+      if (parsedName.error.length > 0) {
+        console.warn('Errors encountered parsing author name', input, parsedName.error)
+        return [];
+      }
+
+      return [parsedName.first, parsedName.last]
+    }
+
+    const isMaybeAName = (possibleName: string, websiteName?: string): boolean => {
+      // spot suspicious words that might indicate this is not a name
+      const suspiciousStrings = [
+        'writer',
+        'staff',
+        'journalist',
+        'http',
+      ];
+
+      websiteName?.split(' ').map((s) => s.toLowerCase()).forEach((s) => suspiciousStrings.push(s));
+
+      return suspiciousStrings.every((s) => possibleName.toLowerCase().indexOf(s) < 0);
+    }
+
     // TODO: author detection needs to be improved a lot
     if (metadata.author != null) {
-      const splitAuthor = metadata.author.toString().split(' ')
-      if (splitAuthor.length == 2) {
-        citationTemplate.first = splitAuthor[0];
-        citationTemplate.last = splitAuthor[splitAuthor.length - 1];
-      } else if (splitAuthor.length > 0) {
-        citationTemplate.author = metadata.author as string;
+      const [firstAuthor, secondAuthor] = (metadata.author as string).split(/\sand|[&]|[|]|via|of\s/)
+
+      if (firstAuthor != null && isMaybeAName(firstAuthor, citationTemplate.website)) {
+        const [first1, last1] = parseAuthor(firstAuthor);
+        if (first1 && last1) {
+          citationTemplate.first1 = first1
+          citationTemplate.last1 = last1
+        }
       }
+
+      if (secondAuthor != null && isMaybeAName(secondAuthor, citationTemplate.website)) {
+        const [first2, last2] = parseAuthor(secondAuthor);
+        if (first2 && last2) {
+          citationTemplate.first2 = first2
+          citationTemplate.last2 = last2
+        }
+      }
+
     }
 
     if (metadata.published != null) {
