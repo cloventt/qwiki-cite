@@ -23,11 +23,13 @@ async function updatePage(citationTemplate: CitationTemplate) {
     const currentValue = await getStoredValue(citationTemplate.url);
 
     const merged = { ...currentValue, ...citationTemplate };
-    console.debug('Settled on final merged value', merged);
 
-    browser.storage.session.set({
-        [merged.url]: merged,
-    });
+    if (merged !== currentValue) {
+        console.debug('Persisting updated value to storage', merged);
+        browser.storage.session.set({
+            [merged.url]: merged,
+        });
+    }
 }
 
 function displayData(citationData: CitationTemplate) {
@@ -55,6 +57,12 @@ async function main() {
         copyToClipboard();
     });
 
+    document.getElementById('snippet-slot')?.addEventListener('change', async (event) => {
+        console.debug('Storing a user-change to the template');
+
+        const parsedValue = QWikiCite.parseCitationString((event.target as HTMLInputElement).value);
+        await updatePage(parsedValue);
+    });
 
     const tabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
     if (tabs.length < 1) {
