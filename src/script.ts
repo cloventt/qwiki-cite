@@ -69,7 +69,22 @@ async function main() {
         console.error('Did not find an active tab to work on, aborting')
         return;
     }
-    const url = tabs[0].url;
+
+    const rawPageUrl = tabs[0].url;
+
+    let url: string;
+    let archiveUrl: string;
+    let archiveDate: string;
+
+    if (rawPageUrl.startsWith('https://web.archive.org/web')) {
+        const archiveUrlRegex = /^https:\/\/web.archive.org\/web\/(\d*)\/(.*)/
+        const match = archiveUrlRegex.exec(rawPageUrl);
+        url = match[2];
+        archiveUrl = rawPageUrl;
+        archiveDate = match[1];
+    } else {
+        url = rawPageUrl;
+    }
 
     browser.storage.session.onChanged.addListener((storageChanges) => {
         if (storageChanges[url] != null) {
@@ -84,7 +99,7 @@ async function main() {
         await updatePage(previousData);
     } else {
         console.debug('No previous data found in session storage, scraping page instead');
-        const pageScrapeResult: MetaData = await browser.tabs.sendMessage(tabs[0].id!!, {});
+        const pageScrapeResult: MetaData = await browser.tabs.sendMessage(tabs[0].id!!, {url});
         if (pageScrapeResult == null) {
             return;
         }
@@ -92,6 +107,11 @@ async function main() {
 
         const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
         citationTemplate.url = url;
+
+        if (archiveUrl != null) {
+            citationTemplate.archiveUrl = archiveUrl;
+            citationTemplate.archiveDate = `${archiveDate.slice(0, 4)}-${archiveDate.slice(4, 6)}-${archiveDate.slice(6, 8)}`;
+        }
 
         console.debug('Generated citation template data', citationTemplate);
 
