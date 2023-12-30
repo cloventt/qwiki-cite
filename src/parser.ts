@@ -5,7 +5,7 @@ import Browser from 'webextension-polyfill';
 /**
  * Lightly modified from https://github.com/BetaHuhn/metadata-scraper/blob/master/src/index.ts
  */
-const getMetaData = function (inputOptions: Partial<Options> = {}) {
+const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) {
 
     const defaultOptions = {
         maxRedirects: 5,
@@ -58,8 +58,7 @@ const getMetaData = function (inputOptions: Partial<Options> = {}) {
 
         return undefined
     }
-
-    const url = window.location.href;
+    
     const options = Object.assign({}, defaultOptions, inputOptions)
 
     const rules: Record<string, RuleSet> = { ...metaDataRules }
@@ -85,7 +84,7 @@ const getMetaData = function (inputOptions: Partial<Options> = {}) {
     return metadata
 }
 
-Browser.runtime.onMessage.addListener(() => {
+Browser.runtime.onMessage.addListener((message) => {
     console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
-    return Promise.resolve(getMetaData());
+    return Promise.resolve(getMetaData(message.url || window.location.href));
 });
