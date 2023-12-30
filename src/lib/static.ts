@@ -130,7 +130,7 @@ export class QWikiCite {
    * @returns the escaped string
    */
   public static esc(s: string): string {
-    return s.replace(/[|]/g, '&#124;').replace(/[{]/g, '&#123;').replace(/[}]/g, '&#125;').replace(/[=]/g, '&#61;')
+    return s.replace(/[|]/g, '&#124;').replace(/[{]/g, '&#123;').replace(/[}]/g, '&#125;')
   }
 
   /**
