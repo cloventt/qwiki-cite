@@ -11,6 +11,10 @@ describe("string escape", () => {
     test("replaces curly brackets", () => {
         expect(QWikiCite.esc('Test Page {{ why }} Site')).to.equal("Test Page &#123;&#123; why &#125;&#125; Site");
     })
+
+    test("removes weird unicode whitespace", () => {
+        expect(QWikiCite.esc('f\u00a0f\u1680f\u2000f\u2001f\u2002f\u2003f\u2004f\u2005f\u2006f\u2007f\u2008f\u2009f\u200af\u2028f\u2029f\u202ff\u205ff\u3000f\ufeff')).to.equal("f f f f f f f f f f f f f f f f f f f ");
+    })
 })
 
 describe("generate compact template", () => {
