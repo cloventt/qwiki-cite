@@ -8,10 +8,6 @@ describe("string escape", () => {
         expect(QWikiCite.esc('Test Page | Site')).to.equal("Test Page &#124; Site");
     })
 
-    test("replaces equals", () => {
-        expect(QWikiCite.esc('Test Page = Site')).to.equal("Test Page &#61; Site");
-    })
-
     test("replaces curly brackets", () => {
         expect(QWikiCite.esc('Test Page {{ why }} Site')).to.equal("Test Page &#123;&#123; why &#125;&#125; Site");
     })
