@@ -23,6 +23,7 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
             provider: {
                 rules: [
                     [ 'meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content') ],
+                    [ 'div.site-name-en', (element: HTMLElement) => element.innerHTML ],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
@@ -106,3 +107,5 @@ Browser.runtime.onMessage.addListener((message) => {
     console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
     return Promise.resolve(getMetaData(message.url || window.location.href));
 });
+
+Browser.runtime.connect();
