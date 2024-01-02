@@ -66,10 +66,17 @@ export class QWikiCite {
 
     if (metadata.title != null) {
       citationTemplate.title = metadata.title.trim();
+
       // parse the date from title if possible
-      const parsedDate = this.getDateInString(metadata.title);
+      const parsedDate = this.getDateInString(citationTemplate.title);
       if (parsedDate != null) {
         citationTemplate.date = parsedDate;
+      }
+
+      // parse the newspaper page number from the title if possible
+      const pageNumber = [...citationTemplate.title.matchAll(/.*Page (\d+)[^\d]*/gi)];
+      if (pageNumber.length && pageNumber[0].length) {
+        citationTemplate.page = pageNumber[0][pageNumber[0].length-1];
       }
     }
     if (metadata.language != null) citationTemplate.language = metadata.language
