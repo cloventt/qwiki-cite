@@ -1,6 +1,7 @@
 import { MetaData } from 'metadata-scraper/lib/types';
 import { CitationTemplate } from './ICitationTemplate';
 import { parseFullName } from 'parse-full-name';
+import moment from 'moment';
 
 
 export class QWikiCite {
@@ -45,6 +46,16 @@ export class QWikiCite {
     return result;
   }
 
+  private static getDateInString(s: string) {
+    const possibleDateMatch = s.match(/((\w{3,9}|[0-3]?\d)[ \/-](\w{3,9}|[0-3]?\d)[ \/,-]{1,2}\d{1,4})/);
+      if (possibleDateMatch) {
+        const parsedDate = moment(possibleDateMatch[0].replace(/[,|th|st]/g, '')).format('YYYY-MM-DD');
+        if (parsedDate != 'Invalid date') {
+          return parsedDate;
+        }
+      }
+  }
+
   /**
    * Convert page metadata to citation template data
    * @param metadata metadata from page scraper
@@ -54,11 +65,12 @@ export class QWikiCite {
     const citationTemplate: CitationTemplate = {};
 
     if (metadata.title != null) {
-      const cleanedTitle = (metadata.title as string).split(/[|><\-*–]/).reduce(
-        (savedText, text) => (text.length > savedText.length ? text : savedText),
-        '',
-      );
-      citationTemplate.title = cleanedTitle.trim();
+      citationTemplate.title = metadata.title.trim();
+      // parse the date from title if possible
+      const parsedDate = this.getDateInString(metadata.title);
+      if (parsedDate != null) {
+        citationTemplate.date = parsedDate;
+      }
     }
     if (metadata.language != null) citationTemplate.language = metadata.language
     if (metadata.provider != null) citationTemplate.website = metadata.provider

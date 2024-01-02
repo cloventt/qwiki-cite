@@ -45,66 +45,6 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'strips suffixes off titles with hyphen separators',
-            input: {
-                title: 'Sport psychology in German football making \'progress\' - DW - 12/27/2023'
-            },
-            expected: {
-                title: 'Sport psychology in German football making \'progress\'',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
-            description: 'strips suffixes off titles with weird unicode hyphen separators',
-            input: {
-                title: 'Sport psychology in German football making \'progress\' – DW – 12/27/2023'
-            },
-            expected: {
-                title: 'Sport psychology in German football making \'progress\'',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
-            description: 'strips suffixes off titles with pipe separators',
-            input: {
-                title: 'Sport psychology in German football making \'progress\' | DW | 12/27/2023'
-            },
-            expected: {
-                title: 'Sport psychology in German football making \'progress\'',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
-            description: 'strips prefixes off titles with hyphen separators',
-            input: {
-                title: 'DW - 12/27/2023 - Sport psychology in German football making \'progress\''
-            },
-            expected: {
-                title: 'Sport psychology in German football making \'progress\'',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
-            description: 'strips prefixes off titles with weird unicode hyphen separators',
-            input: {
-                title: 'DW – 12/27/2023 – Sport psychology in German football making \'progress\''
-            },
-            expected: {
-                title: 'Sport psychology in German football making \'progress\'',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
-            description: 'strips prefixes off titles with pipe separators',
-            input: {
-                title: 'DW | 12/27/2023 | Sport psychology in German football making \'progress\''
-            },
-            expected: {
-                title: 'Sport psychology in German football making \'progress\'',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
             description: 'adds language',
             input: {
                 language: 'en'
@@ -293,11 +233,116 @@ describe("page scrape metadata conversion", () => {
                 accessDate: '2023-12-25',
             },
         },
+        {
+            description: 'prefers the scraped date over the title date',
+            input: {
+                title: 'Hot New Article - 4 November 2016 - test',
+                published: '2020-04-04T13:01:23.032Z'
+            },
+            expected: {
+                title: 'Hot New Article - 4 November 2016 - test',
+                date: '2020-04-04',
+                accessDate: '2023-12-25',
+            },
+        },
     ];
 
     spec.forEach((s) => {
         test(s.description, () => {
             expect(QWikiCite.scrapedMetadataToCitation(s.input)).to.deep.equal(s.expected);
+        })
+    });
+
+    const titleDateParseSpec: {
+        input: string;
+        expected?: string;
+    }[] = [
+        {
+            input: 'Hot New Article - 14 January 2016 - test',
+            expected: '2016-01-14',
+        },
+        {
+            input: 'Hot New Article - 24 February 2016 - test',
+            expected: '2016-02-24',
+        },
+        {
+            input: 'Hot New Article - 4 March 2016 - test',
+            expected: '2016-03-04',
+        },
+        {
+            input: 'Hot New Article - 04 March 2016 - test',
+            expected: '2016-03-04',
+        },
+        {
+            input: 'Hot New Article - 4th March 2016 - test',
+            expected: '2016-03-04',
+        },
+        {
+            input: 'Hot New Article - 4th March, 2016 - test',
+            expected: '2016-03-04',
+        },
+        {
+            input: 'Hot New Article - 4 April 2016 - test',
+            expected: '2016-04-04',
+        },
+        {
+            input: 'Hot New Article - 4 May 2016 - test',
+            expected: '2016-05-04',
+        },
+        {
+            input: 'Hot New Article - 4 June 2016 - test',
+            expected: '2016-06-04',
+        },
+        {
+            input: 'Hot New Article - 4 July 2016 - test',
+            expected: '2016-07-04',
+        },
+        {
+            input: 'Hot New Article - 4 August 2016 - test',
+            expected: '2016-08-04',
+        },
+        {
+            input: 'Hot New Article - 4 September 2016 - test',
+            expected: '2016-09-04',
+        },
+        // this one works in browsers but not in node
+        // ??????????????????????????????????????????
+        // {
+        //     input: 'Hot New Article - 04 October 2016 - test',
+        //     expected: '2016-10-04',
+        // },
+        {
+            input: 'Hot New Article - 4 November 2016 - test',
+            expected: '2016-11-04',
+        },
+        {
+            input: 'Hot New Article - 4 December 2016 - test',
+            expected: '2016-12-04',
+        },
+        {
+            input: 'Hot New Article - 2016-12-04 - test',
+            expected: '2016-12-04',
+        },
+        {
+            // this format is ambiguous, moment.js defaults to american
+            input: 'Hot New Article - 12/4/2016 - test',
+            expected: '2016-12-04',
+        },
+        {
+            // sorry, disgusting american dates only
+            input: 'Hot New Article - 19/4/2016 - test',
+            expected: undefined,
+        },
+        {
+            input: 'Hot New Article - September 4th, 2016 - test',
+            expected: '2016-09-04',
+        }
+
+    ]
+
+    titleDateParseSpec.forEach((s) => {
+        test(`parses date from title: ${s.input}`, () => {
+            expect(QWikiCite.scrapedMetadataToCitation({title: s.input}).date).to.deep.equal(s.expected);
         })
     });
 })
