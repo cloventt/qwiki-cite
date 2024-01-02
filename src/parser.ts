@@ -14,11 +14,21 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
         timeout: 10000,
         forceImageHttps: true,
         customRules: {
+            title: {
+                rules: [
+                    [ 'h3.article-title', (element: HTMLElement) => element.innerText ], 
+                ]
+            },
             provider: {
                 rules: [
                     [ 'meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content') ],
                 ]
             },
+            pageNumber: {
+                rules: [
+                    [ 'h3.pager__center__title', (element: HTMLElement) => element.innerHTML.match(/\d?/g)[0]], 
+                ]
+            }
         }
     }
 
@@ -70,9 +80,9 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
     const rules: Record<string, RuleSet> = { ...metaDataRules }
     Object.keys(options.customRules).forEach((key: string) => {
         rules[key] = {
-            rules: [...metaDataRules[key].rules, ...options.customRules[key].rules],
-            defaultValue: options.customRules[key].defaultValue || metaDataRules[key].defaultValue,
-            processor: options.customRules[key].processor || metaDataRules[key].processor
+            rules: metaDataRules[key] ? [...options.customRules[key].rules, ...metaDataRules[key].rules]: options.customRules[key].rules,
+            defaultValue: options.customRules[key].defaultValue || metaDataRules[key]?.defaultValue,
+            processor: options.customRules[key].processor || metaDataRules[key]?.processor
         }
     })
 
