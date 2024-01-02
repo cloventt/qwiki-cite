@@ -1,5 +1,6 @@
 import { metaDataRules } from 'metadata-scraper/lib/rules';
 import { Options, Context, RuleSet, MetaData } from 'metadata-scraper/lib/types'
+import { parseUrl } from 'metadata-scraper/lib/utils'
 import Browser from 'webextension-polyfill';
 
 /**
@@ -22,7 +23,8 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
             provider: {
                 rules: [
                     [ 'meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content') ],
-                ]
+                ],
+                defaultValue: (context) => parseUrl(context.url),
             },
             pageNumber: {
                 rules: [
