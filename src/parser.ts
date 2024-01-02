@@ -13,7 +13,13 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
         lang: '*',
         timeout: 10000,
         forceImageHttps: true,
-        customRules: {}
+        customRules: {
+            provider: {
+                rules: [
+                    [ 'meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content') ],
+                ]
+            },
+        }
     }
 
     const runRule = function (ruleSet: RuleSet, doc: Document, context: Context) {
