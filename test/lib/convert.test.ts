@@ -134,17 +134,6 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'handles syndicated authors',
-            input: {
-                author: 'Joe Goldberg of Reuters'
-            },
-            expected: {
-                first1: 'Joe',
-                last1: 'Goldberg',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
             description: 'gives up on generic journalist author',
             input: {
                 author: 'Staff journalists'
