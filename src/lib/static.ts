@@ -17,7 +17,7 @@ export class QWikiCite {
    */
   public static generateCitationString(pageDetails: CitationTemplate, compact: boolean = true): string {
     const result: string[] = [];
-    result.push('cite web');
+    result.push(pageDetails.type === 'book' ? 'cite book' : 'cite web');
 
     (Object.keys(pageDetails) as Array<keyof CitationTemplate>).forEach((key) => {
       if (pageDetails[key] != null) {
@@ -82,6 +82,11 @@ export class QWikiCite {
     if (metadata.language != null) citationTemplate.language = metadata.language
     if (metadata.provider != null) citationTemplate.website = metadata.provider
 
+    if (metadata.publisher != null) citationTemplate.publisher = (metadata.publisher as string).trim()
+    if (metadata.isbn != null) citationTemplate.isbn = (metadata.isbn as string).trim()
+    if (metadata.location != null) citationTemplate.location = (metadata.location as string).trim()
+    if (metadata.type != null) citationTemplate.type = (metadata.type as string).trim()
+
     const parseAuthor = (input: string): [string?, string?] => {
       // try and break the name into components
       const parsedName = parseFullName(input);
@@ -113,7 +118,7 @@ export class QWikiCite {
       const stripped = (metadata.author as string).trim().replace(/[([].*[)\]]/g, '')
 
       // split into multiple authors
-      const [firstAuthor, secondAuthor] = stripped.split(/\sand|[&]|[|]|via|of\s/)
+      const [firstAuthor, secondAuthor] = stripped.split(/\sand|[&]|[,]|[;]|[|]|via\s/)
 
       if (firstAuthor != null && isMaybeAName(firstAuthor, citationTemplate.website)) {
         const [first1, last1] = parseAuthor(firstAuthor);
@@ -133,8 +138,8 @@ export class QWikiCite {
 
     }
 
-    if (metadata.published != null) {
-      citationTemplate.date = metadata.published.slice(0, 10).toString();
+    if (metadata.published != null || metadata.year != null) {
+      citationTemplate.date = (metadata.year as string)?.trim() || metadata.published.slice(0, 10).toString();
     }
 
     citationTemplate.accessDate = new Date().toISOString().slice(0, 10);
