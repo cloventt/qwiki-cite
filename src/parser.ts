@@ -103,9 +103,38 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
     return metadata
 }
 
+const parseWorldCat = function() {
+    const dataFeed = JSON.parse((document.querySelectorAll('script[type="application/ld+json"]')[0] as HTMLElement).textContent);
+    const bookElement = dataFeed['dataFeedElement'][0];
+
+    const metadata: MetaData = {};
+    metadata.title = bookElement.name;
+    metadata.url = bookElement.url;
+    metadata.type = bookElement['@type']?.toLowerCase();
+    metadata.author = bookElement.author?.name;
+
+    const bookElementExample = bookElement.workExample[0];
+    if (bookElementExample != null) {
+        metadata.published = bookElementExample.datePublished;
+        metadata.isbn = bookElementExample.isbn;
+        metadata.language = bookElementExample.inLanguage;
+        metadata.edition = bookElementExample.bookEdition;
+    };
+
+    const rawPubString = document.querySelectorAll('span[data-testid*="publisher"]')[0].textContent.split(',');
+    metadata.publisher = rawPubString[0];
+    metadata.location = rawPubString[rawPubString.length-2];
+    metadata.year = rawPubString[rawPubString.length-1];
+    return metadata;
+}
+
 Browser.runtime.onMessage.addListener((message) => {
     console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
-    return Promise.resolve(getMetaData(message.url || window.location.href));
+    if (window.location.href.startsWith('https://search.worldcat.org/')) {
+        return Promise.resolve(parseWorldCat());
+    } else {
+        return Promise.resolve(getMetaData(message.url || window.location.href));
+    }
 });
 
 Browser.runtime.connect();
