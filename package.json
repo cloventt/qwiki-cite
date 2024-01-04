@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@parcel/config-webextension": "^2.10.3",
+    "@playwright/test": "^1.40.1",
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
     "@types/moment": "^2.13.0",
@@ -29,7 +30,7 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "test": "ts-mocha ./test/**/*",
+    "test": "yarn build && yarn playwright install && ts-mocha --timeout 30000 ./test/**/*",
     "build": "rm -rf dist .cache .parcel-cache && parcel build --no-cache src/manifest.json",
     "watch": "parcel watch --host localhost src/manifest.json",
     "bundle": "yarn test && yarn build && zip -j qwiki-cite-$npm_package_version.zip ./dist/*"
