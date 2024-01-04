@@ -192,6 +192,15 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
+            description: 'ignores National Library of New Zealand',
+            input: {
+                author: 'National Library of New Zealand'
+            },
+            expected: {
+                accessDate: '2023-12-25',
+            },
+        },
+        {
             description: 'ignores author role in square brackets',
             input: {
                 author: 'David Palmer [Senior Staff Writer]'
@@ -235,24 +244,12 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'grabs newspaper page number from title if present (lowercase)',
+            description: 'grabs newspaper page number if present',
             input: {
-                title: 'Hot New Article - page 8 -test',
+                pageNumber: '7',
             },
             expected: {
-                title: 'Hot New Article - page 8 -test',
-                page: '8',
-                accessDate: '2023-12-25',
-            },
-        },
-        {
-            description: 'grabs newspaper page number from title if present (capitalised)',
-            input: {
-                title: 'Hot New Article - Page 18 -test',
-            },
-            expected: {
-                title: 'Hot New Article - Page 18 -test',
-                page: '18',
+                page: '7',
                 accessDate: '2023-12-25',
             },
         },

@@ -1,6 +1,7 @@
 import { describe, test } from 'mocha'
 import { expect } from 'chai'
 import * as playwright from '@playwright/test';
+import moment from 'moment';
 
 const TEST_TIMEOUT = 30000;
 
@@ -24,7 +25,9 @@ describe("page scraping works as expected", () => {
             author: 'National Library of New Zealand',
             provider: 'Press',
             language: 'en',
-            title: '\nCouncil seat ‘vote against station’\nPress, 15 February 1985, Page 7\n',
+            title: 'Council seat ‘vote against station’',
+            published: '1985-02-15T00:00:00.000Z',
+            pageNumber: '7',
             url: 'https://paperspast.natlib.govt.nz/newspapers/CHP19850215.2.71',
         });
     });
