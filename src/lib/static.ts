@@ -72,20 +72,15 @@ export class QWikiCite {
       if (parsedDate != null) {
         citationTemplate.date = parsedDate;
       }
-
-      // parse the newspaper page number from the title if possible
-      const pageNumber = [...citationTemplate.title.matchAll(/.*Page (\d+)[^\d]*/gi)];
-      if (pageNumber.length && pageNumber[0].length) {
-        citationTemplate.page = pageNumber[0][pageNumber[0].length-1];
-      }
     }
+    if (metadata.pageNumber != null) citationTemplate.page = metadata.pageNumber as string;
     if (metadata.language != null) citationTemplate.language = metadata.language
     if (metadata.provider != null) citationTemplate.website = metadata.provider
 
     if (metadata.publisher != null) citationTemplate.publisher = (metadata.publisher as string).trim()
     if (metadata.isbn != null) citationTemplate.isbn = (metadata.isbn as string).trim()
     if (metadata.location != null) citationTemplate.location = (metadata.location as string).trim()
-    if (metadata.type != null) citationTemplate.type = (metadata.type as string).trim()
+    if (metadata.type == 'book') citationTemplate.type = (metadata.type as string).trim()
 
     const parseAuthor = (input: string): [string?, string?] => {
       // try and break the name into components
@@ -106,6 +101,8 @@ export class QWikiCite {
         'journalist',
         'reporter',
         'http',
+        'national',
+        'library',
       ];
 
       websiteName?.split(' ').map((s) => s.toLowerCase()).forEach((s) => suspiciousStrings.push(s));

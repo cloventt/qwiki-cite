@@ -1,6 +1,7 @@
 import { metaDataRules } from 'metadata-scraper/lib/rules';
-import { Options, Context, RuleSet, MetaData } from 'metadata-scraper/lib/types'
-import { parseUrl } from 'metadata-scraper/lib/utils'
+import { Options, Context, RuleSet, MetaData } from 'metadata-scraper/lib/types';
+import { parseUrl } from 'metadata-scraper/lib/utils';
+import moment from 'moment';
 
 /**
  * Lightly modified from https://github.com/BetaHuhn/metadata-scraper/blob/master/src/index.ts
@@ -16,20 +17,35 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
         customRules: {
             title: {
                 rules: [
-                    [ 'h3.article-title', (element: HTMLElement) => element.innerText ], 
+                    ['h3.article-title', (element: HTMLElement) => element.textContent.trim().split('\n')[0]],
                 ]
             },
             provider: {
                 rules: [
-                    [ 'meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content') ],
-                    [ 'div.site-name-en', (element: HTMLElement) => element.innerHTML ],
+                    ['meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['div.site-name-en', (element: HTMLElement) => element.innerHTML],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
             pageNumber: {
                 rules: [
-                    [ 'h3.pager__center__title', (element: HTMLElement) => element.innerHTML.match(/\d?/g)[0]], 
+                    ['p.citation', (element: HTMLElement) => {
+                        const citationElements = element.textContent.split(',')
+                        return citationElements[citationElements.length-1].match(/\d+/)[0];
+                    }
+                    ]
                 ]
+            },
+            published: {
+                rules: [
+                    // rule for Papers Past
+                    ['p.citation', (element: HTMLElement) => {
+                        const citationElements = element.textContent.split(',')
+                        return citationElements[citationElements.length-2];
+                    }
+                    ]
+                ],
+                processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }
         }
     }
@@ -76,13 +92,13 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
 
         return undefined
     }
-    
+
     const options = Object.assign({}, defaultOptions, inputOptions)
 
     const rules: Record<string, RuleSet> = { ...metaDataRules }
     Object.keys(options.customRules).forEach((key: string) => {
         rules[key] = {
-            rules: metaDataRules[key] ? [...options.customRules[key].rules, ...metaDataRules[key].rules]: options.customRules[key].rules,
+            rules: metaDataRules[key] ? [...options.customRules[key].rules, ...metaDataRules[key].rules] : options.customRules[key].rules,
             defaultValue: options.customRules[key].defaultValue || metaDataRules[key]?.defaultValue,
             processor: options.customRules[key].processor || metaDataRules[key]?.processor
         }
@@ -102,7 +118,7 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
     return metadata
 }
 
-export const parseWorldCat = function() {
+export const parseWorldCat = function () {
     const dataFeed = JSON.parse((document.querySelectorAll('script[type="application/ld+json"]')[0] as HTMLElement).textContent);
     const bookElement = dataFeed['dataFeedElement'][0];
 
@@ -122,8 +138,8 @@ export const parseWorldCat = function() {
 
     const rawPubString = document.querySelectorAll('span[data-testid*="publisher"]')[0].textContent.split(',');
     metadata.publisher = rawPubString[0];
-    metadata.location = rawPubString[rawPubString.length-2];
-    metadata.year = rawPubString[rawPubString.length-1];
+    metadata.location = rawPubString[rawPubString.length - 2];
+    metadata.year = rawPubString[rawPubString.length - 1];
     return metadata;
 }
 
