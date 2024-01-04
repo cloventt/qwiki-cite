@@ -65,6 +65,21 @@ describe("page scraping works as expected", () => {
         });
     });
 
+    test('on The Wall Street Journal', async () => {
+        const url = 'https://www.wsj.com/us-news/law/trump-asks-supreme-court-to-overturn-his-removal-from-colorado-primary-ballot-3eeaedb0';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            // author: ['Jan Wolfe', 'Jess Bravin'],  // TODO: use schema.org to determine this accurately
+            // provider: 'The Wall Street Journal', // TODO: use schema.org to determine this accurately
+            language: 'en',
+            title: 'Trump Asks Supreme Court to Overturn His Removal From Colorado Primary Ballot',
+            // published: '2024-01-03T22:10:00.000Z',  // TODO: use schema.org to determine this accurately
+            url,
+        });
+    });
+
     beforeEach(async () => {
         browser = await playwright['firefox'].launch({ headless: true });
         context = await browser.newContext({
