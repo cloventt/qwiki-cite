@@ -17,10 +17,21 @@ async function getStoredValue(url: string): Promise<CitationTemplate> {
  * Update the cite web template in the text box, preserving anything that is 
  * already there.
  * @param citationTemplate the new values to add
+ * @param append if false, explicitly set deleted values to null so they remain deleted
  */
-async function updatePage(citationTemplate: CitationTemplate) {
+async function updatePage(citationTemplate: CitationTemplate, append: boolean = false) {
 
     const currentValue = await getStoredValue(citationTemplate.url);
+
+    if (!append) {
+        Object.keys(currentValue).forEach((key) => {
+            if (!(key in citationTemplate)) {
+                // the key did previously exist, but has been removed by the user
+                // explictly set it to null so that we remember that it was deleted
+                citationTemplate[key] = null;
+            }
+        })
+    }
 
     const merged = { ...currentValue, ...citationTemplate };
 
@@ -136,7 +147,7 @@ async function main() {
                     url,
                     archiveUrl: waybackAnswer["archived_snapshots"]["closest"]["url"],
                     archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
-                })
+                }, true);
             }
         })
     }
