@@ -1,12 +1,11 @@
 import { metaDataRules } from 'metadata-scraper/lib/rules';
 import { Options, Context, RuleSet, MetaData } from 'metadata-scraper/lib/types'
 import { parseUrl } from 'metadata-scraper/lib/utils'
-import Browser from 'webextension-polyfill';
 
 /**
  * Lightly modified from https://github.com/BetaHuhn/metadata-scraper/blob/master/src/index.ts
  */
-const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) {
+export const getGenericMetadata = function (url: string, inputOptions: Partial<Options> = {}) {
 
     const defaultOptions = {
         maxRedirects: 5,
@@ -97,13 +96,13 @@ const getMetaData = function (url: string, inputOptions: Partial<Options> = {}) 
 
     Object.keys(rules).map((key: string) => {
         const ruleSet = rules[key]
-        metadata[key] = runRule(ruleSet, document, context) || undefined
+        metadata[key] = runRule(ruleSet, window.document, context) || undefined
     })
 
     return metadata
 }
 
-const parseWorldCat = function() {
+export const parseWorldCat = function() {
     const dataFeed = JSON.parse((document.querySelectorAll('script[type="application/ld+json"]')[0] as HTMLElement).textContent);
     const bookElement = dataFeed['dataFeedElement'][0];
 
@@ -128,13 +127,18 @@ const parseWorldCat = function() {
     return metadata;
 }
 
-Browser.runtime.onMessage.addListener((message) => {
+declare global {
+    interface Window { scrapePage: Function; }
+}
+
+export const scrapePage = (message: any): Promise<MetaData> => {
     console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
     if (window.location.href.startsWith('https://search.worldcat.org/')) {
         return Promise.resolve(parseWorldCat());
     } else {
-        return Promise.resolve(getMetaData(message.url || window.location.href));
+        return Promise.resolve(getGenericMetadata(message.url || window.location.href));
     }
-});
+};
 
-Browser.runtime.connect();
+// exposed for testing
+window.scrapePage = scrapePage;
