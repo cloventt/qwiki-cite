@@ -50,6 +50,21 @@ describe("page scraping works as expected", () => {
         });
     });
 
+    test('on The Press', async () => {
+        const url = 'https://www.thepress.co.nz/nz-news/350124379/phil-maugers-roving-footpath-crew-completes-2000-repairs';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Tina Law',
+            provider: 'The Press',
+            language: 'en',
+            title: 'Phil Mauger’s roving footpath crew completes 2000 repairs',
+            published: '2024-01-03T16:00:00.000Z',
+            url,
+        });
+    });
+
     beforeEach(async () => {
         browser = await playwright['firefox'].launch({ headless: true });
         context = await browser.newContext({
