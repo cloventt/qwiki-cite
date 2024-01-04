@@ -32,6 +32,24 @@ describe("page scraping works as expected", () => {
         });
     });
 
+    test('on worldcat', async () => {
+        const url = 'https://search.worldcat.org/title/1250610805';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Geoffrey W. Rice',
+            publisher: 'Canterbury University Press',
+            location: 'NZ',  // can't really do much better than this
+            language: 'en',
+            title: 'Black November : the 1918 influenza pandemic in New Zealand',
+            published: '2005',
+            type: 'book',
+            isbn: '9781877257353',
+            url: 'https://search.worldcat.org/title/1250610805',
+        });
+    });
+
     beforeEach(async () => {
         browser = await playwright['firefox'].launch({ headless: true });
         context = await browser.newContext({

@@ -123,23 +123,23 @@ export const parseWorldCat = function () {
     const bookElement = dataFeed['dataFeedElement'][0];
 
     const metadata: MetaData = {};
-    metadata.title = bookElement.name;
-    metadata.url = bookElement.url;
-    metadata.type = bookElement['@type']?.toLowerCase();
-    metadata.author = bookElement.author?.name;
+    metadata.title = bookElement.name.trim();
+    metadata.url = bookElement.url.trim();
+    metadata.type = bookElement['@type']?.toLowerCase().trim();
+    metadata.author = bookElement.author?.name.trim();
 
     const bookElementExample = bookElement.workExample[0];
     if (bookElementExample != null) {
         metadata.published = bookElementExample.datePublished;
         metadata.isbn = bookElementExample.isbn;
-        metadata.language = bookElementExample.inLanguage;
+        metadata.language = Intl.getCanonicalLocales(bookElementExample.inLanguage)[0];
         metadata.edition = bookElementExample.bookEdition;
     };
 
     const rawPubString = document.querySelectorAll('span[data-testid*="publisher"]')[0].textContent.split(',');
-    metadata.publisher = rawPubString[0];
-    metadata.location = rawPubString[rawPubString.length - 2];
-    metadata.year = rawPubString[rawPubString.length - 1];
+    metadata.publisher = rawPubString[0].trim();
+    metadata.location = rawPubString[rawPubString.length - 2].trim();
+    metadata.year = rawPubString[rawPubString.length - 1].trim();
     return metadata;
 }
 
