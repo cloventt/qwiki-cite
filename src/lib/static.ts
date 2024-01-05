@@ -75,12 +75,18 @@ export class QWikiCite {
     }
     if (metadata.pageNumber != null) citationTemplate.page = metadata.pageNumber as string;
     if (metadata.language != null) citationTemplate.language = metadata.language
-    if (metadata.provider != null) citationTemplate.website = metadata.provider
+    if (metadata.provider != null) {
+      if (metadata.type === 'book') {
+        citationTemplate.publisher = metadata.provider
+      } else {
+        citationTemplate.website = metadata.provider
+      }
+    }
 
     if (metadata.publisher != null) citationTemplate.publisher = (metadata.publisher as string).trim()
     if (metadata.isbn != null) citationTemplate.isbn = (metadata.isbn as string).trim()
     if (metadata.location != null) citationTemplate.location = (metadata.location as string).trim()
-    if (metadata.type == 'book') citationTemplate.type = (metadata.type as string).trim()
+    if (metadata.type === 'book') citationTemplate.type = (metadata.type as string).trim()
 
     const parseAuthor = (input: string): [string?, string?] => {
       // try and break the name into components

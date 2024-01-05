@@ -2,11 +2,12 @@ import { metaDataRules } from 'metadata-scraper/lib/rules';
 import { Options, Context, RuleSet, MetaData } from 'metadata-scraper/lib/types';
 import { parseUrl } from 'metadata-scraper/lib/utils';
 import moment from 'moment';
+import { removeUndefined, scrapeJsonLd } from './ldjson-parser';
 
 /**
  * Lightly modified from https://github.com/BetaHuhn/metadata-scraper/blob/master/src/index.ts
  */
-export const getGenericMetadata = function (url: string, inputOptions: Partial<Options> = {}) {
+const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): Promise<MetaData> {
 
     const defaultOptions = {
         maxRedirects: 5,
@@ -22,8 +23,18 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
             },
             provider: {
                 rules: [
+                    ['span[data-testid*="publisher"]', (element: HTMLElement) => element.textContent.split(',')[0]?.trim()],
                     ['meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['div.site-name-en', (element: HTMLElement) => element.innerHTML],
+                ],
+                defaultValue: (context) => parseUrl(context.url),
+            },
+            location: {
+                rules: [
+                    ['span[data-testid*="publisher"]', (element: HTMLElement) => {
+                        const rawPubString = element.textContent.split(',');
+                        return rawPubString[rawPubString.length - 2]?.trim();
+                    }],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
@@ -31,9 +42,17 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
                 rules: [
                     ['p.citation', (element: HTMLElement) => {
                         const citationElements = element.textContent.split(',')
-                        return citationElements[citationElements.length-1].match(/\d+/)[0];
+                        return citationElements[citationElements.length - 1]?.match(/\d+/)[0];
                     }
                     ]
+                ]
+            },
+            year: {
+                rules : [
+                    ['span[data-testid*="publisher"]', (element: HTMLElement) => {
+                        const rawPubString = element.textContent.split(',');
+                        return rawPubString[rawPubString.length - 1]?.trim();
+                    }],
                 ]
             },
             published: {
@@ -41,9 +60,13 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
                     // rule for Papers Past
                     ['p.citation', (element: HTMLElement) => {
                         const citationElements = element.textContent.split(',')
-                        return citationElements[citationElements.length-2];
+                        return citationElements[citationElements.length - 2];
                     }
-                    ]
+                    ],
+                    ['span[data-testid*="publisher"]', (element: HTMLElement) => {
+                        const rawPubString = element.textContent.split(',');
+                        return rawPubString[rawPubString.length - 1]?.trim();
+                    }],
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }
@@ -115,46 +138,30 @@ export const getGenericMetadata = function (url: string, inputOptions: Partial<O
         metadata[key] = runRule(ruleSet, window.document, context) || undefined
     })
 
-    return metadata
+    return Promise.resolve(metadata);
 }
 
-export const parseWorldCat = function () {
-    const dataFeed = JSON.parse((document.querySelectorAll('script[type="application/ld+json"]')[0] as HTMLElement).textContent);
-    const bookElement = dataFeed['dataFeedElement'][0];
+export const scrapePage = async (message: any): Promise<MetaData> => {
+    console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
 
-    const metadata: MetaData = {};
-    metadata.title = bookElement.name.trim();
-    metadata.url = bookElement.url.trim();
-    metadata.type = bookElement['@type']?.toLowerCase().trim();
-    metadata.author = bookElement.author?.name.trim();
+    const domScrape = scrapeDOM(message.url || window.location.href);
 
-    const bookElementExample = bookElement.workExample[0];
-    if (bookElementExample != null) {
-        metadata.published = bookElementExample.datePublished;
-        metadata.isbn = bookElementExample.isbn;
-        metadata.language = Intl.getCanonicalLocales(bookElementExample.inLanguage)[0];
-        metadata.edition = bookElementExample.bookEdition;
-    };
+    const pageSchemaBlobs = [...document.querySelectorAll('script[type="application/ld+json"]')]?.map(async (element) => {
+        return scrapeJsonLd(element.textContent);
+    });
 
-    const rawPubString = document.querySelectorAll('span[data-testid*="publisher"]')[0].textContent.split(',');
-    metadata.publisher = rawPubString[0].trim();
-    metadata.location = rawPubString[rawPubString.length - 2].trim();
-    metadata.year = rawPubString[rawPubString.length - 1].trim();
-    return metadata;
-}
+    const scrapeData = pageSchemaBlobs ? [domScrape, ...pageSchemaBlobs] : [domScrape];
 
+    return Promise.all(scrapeData).then((scrapeResults) => {
+        console.log(scrapeResults)
+        return scrapeResults.reduce((resA, resB) => {
+            return { ...removeUndefined(resA), ...removeUndefined(resB) }
+        })
+    });
+};
 declare global {
     interface Window { scrapePage: Function; }
 }
-
-export const scrapePage = (message: any): Promise<MetaData> => {
-    console.debug('QWiki-Cite asked for the details of this page, beginning a scrape');
-    if (window.location.href.startsWith('https://search.worldcat.org/')) {
-        return Promise.resolve(parseWorldCat());
-    } else {
-        return Promise.resolve(getGenericMetadata(message.url || window.location.href));
-    }
-};
 
 // exposed for testing
 window.scrapePage = scrapePage;
