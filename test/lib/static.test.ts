@@ -26,7 +26,7 @@ describe("generate compact template", () => {
         {
             description: 'works with empty input',
             input: {},
-            expected: '{{cite web}}',
+            expected: '{{citation}}',
         },
         {
             description: 'works with minimal fields',
@@ -34,7 +34,7 @@ describe("generate compact template", () => {
                 title: 'Test Article',
                 url: 'https://cloventt.net/test-article'
             },
-            expected: '{{cite web|title=Test Article|url=https://cloventt.net/test-article}}',
+            expected: '{{citation|title=Test Article|url=https://cloventt.net/test-article}}',
         },
         {
             description: 'works with empty fields',
@@ -43,7 +43,7 @@ describe("generate compact template", () => {
                 url: 'https://cloventt.net/test-article',
                 author: undefined,
             },
-            expected: '{{cite web|title=Test Article|url=https://cloventt.net/test-article}}',
+            expected: '{{citation|title=Test Article|url=https://cloventt.net/test-article}}',
         },
     ];
 
@@ -63,7 +63,7 @@ describe("generate non-compact template", () => {
         {
             description: 'works with empty input',
             input: {},
-            expected: '{{cite web\n}}',
+            expected: '{{citation\n}}',
         },
         {
             description: 'works with minimal fields',
@@ -71,7 +71,7 @@ describe("generate non-compact template", () => {
                 title: 'Test Article',
                 url: 'https://cloventt.net/test-article'
             },
-            expected: '{{cite web\n  |title=Test Article\n  |url=https://cloventt.net/test-article\n}}',
+            expected: '{{citation\n  |title=Test Article\n  |url=https://cloventt.net/test-article\n}}',
         },
         {
             description: 'works with empty fields',
@@ -80,7 +80,7 @@ describe("generate non-compact template", () => {
                 url: 'https://cloventt.net/test-article',
                 author: undefined,
             },
-            expected: '{{cite web\n  |title=Test Article\n  |url=https://cloventt.net/test-article\n}}',
+            expected: '{{citation\n  |title=Test Article\n  |url=https://cloventt.net/test-article\n}}',
         },
     ];
 

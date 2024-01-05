@@ -1,7 +1,7 @@
-import { MetaData } from 'metadata-scraper/lib/types';
 import { CitationTemplate } from './ICitationTemplate';
 import { parseFullName } from 'parse-full-name';
 import moment from 'moment';
+import { MetaData } from './iMetadata';
 
 
 export class QWikiCite {
@@ -17,7 +17,7 @@ export class QWikiCite {
    */
   public static generateCitationString(pageDetails: CitationTemplate, compact: boolean = true): string {
     const result: string[] = [];
-    result.push(pageDetails.type === 'book' ? 'cite book' : 'cite web');
+    result.push('citation');
 
     (Object.keys(pageDetails) as Array<keyof CitationTemplate>).forEach((key) => {
       if (pageDetails[key] != null) {
@@ -48,12 +48,12 @@ export class QWikiCite {
 
   private static getDateInString(s: string) {
     const possibleDateMatch = s.match(/((\w{3,9}|[0-3]?\d)[ \/-](\w{3,9}|[0-3]?\d)[ \/,-]{1,2}\d{1,4})/);
-      if (possibleDateMatch) {
-        const parsedDate = moment(possibleDateMatch[0].replace(/[,|th|st]/g, '')).format('YYYY-MM-DD');
-        if (parsedDate != 'Invalid date') {
-          return parsedDate;
-        }
+    if (possibleDateMatch) {
+      const parsedDate = moment(possibleDateMatch[0].replace(/[,|th|st]/g, '')).format('YYYY-MM-DD');
+      if (parsedDate != 'Invalid date') {
+        return parsedDate;
       }
+    }
   }
 
   /**
@@ -75,18 +75,23 @@ export class QWikiCite {
     }
     if (metadata.pageNumber != null) citationTemplate.page = metadata.pageNumber as string;
     if (metadata.language != null) citationTemplate.language = metadata.language
+
     if (metadata.provider != null) {
       if (metadata.type === 'book') {
-        citationTemplate.publisher = metadata.provider
+        citationTemplate.publisher = metadata.provider?.trim()
       } else {
-        citationTemplate.website = metadata.provider
+        citationTemplate.work = metadata.journal?.trim() || metadata.provider?.trim()
       }
     }
 
     if (metadata.publisher != null) citationTemplate.publisher = (metadata.publisher as string).trim()
     if (metadata.isbn != null) citationTemplate.isbn = (metadata.isbn as string).trim()
+    if (metadata.issn != null) citationTemplate.issn = (metadata.issn as string).trim()
+    if (metadata.doi != null) citationTemplate.doi = (metadata.doi as string).trim()
+    if (metadata.volume != null) citationTemplate.volume = (metadata.volume as string).trim()
     if (metadata.location != null) citationTemplate.location = (metadata.location as string).trim()
-    if (metadata.type === 'book') citationTemplate.type = (metadata.type as string).trim()
+    if (metadata.urlAccess != null) citationTemplate.urlAccess = (metadata.urlAccess as string).trim()
+    // if (['book', 'journal'].includes(metadata.type)) citationTemplate.type = (metadata.type as string).trim()
 
     const parseAuthor = (input: string): [string?, string?] => {
       // try and break the name into components
@@ -117,11 +122,8 @@ export class QWikiCite {
     }
 
     if (metadata.author != null) {
-      // remove anything in brackets (might be a job title)
-      const stripped = (metadata.author as string).trim().replace(/[([].*[)\]]/g, '')
-
       // split into multiple authors
-      const [firstAuthor, secondAuthor] = stripped.split(/\sand|[&]|[,]|[;]|[|]|via\s/)
+      const [firstAuthor, secondAuthor] = Array.isArray(metadata.author) ? metadata.author : (metadata.author as string).trim().replace(/[([].*[)\]]/g, '').split(/\sand|[&]|[,]|[;]|[|]|via\s/);
 
       if (firstAuthor != null && isMaybeAName(firstAuthor, citationTemplate.website)) {
         const [first1, last1] = parseAuthor(firstAuthor);

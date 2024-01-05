@@ -1,6 +1,7 @@
 import { describe, test } from 'mocha'
 import { expect } from 'chai'
 import * as playwright from '@playwright/test';
+import { MetaData } from '../../src/lib/iMetadata';
 
 let page: playwright.Page; 
 let browser: playwright.Browser;
@@ -68,14 +69,98 @@ describe("page scraping works as expected", () => {
         await page.addScriptTag({ path: './dist/parsers.js' });
         const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
         expect(scrapeResult).to.deep.include({
-            author: ['Jan Wolfe', 'Jess Bravin'],  // TODO: use schema.org to determine this accurately
-            provider: 'The Wall Street Journal', // TODO: use schema.org to determine this accurately
+            author: ['Jan Wolfe', 'Jess Bravin'],
+            provider: 'The Wall Street Journal',
             language: 'en-US',
             title: 'Trump Asks Supreme Court to Overturn His Removal From Colorado Primary Ballot',
-            published: '2024-01-03T22:10:00.000Z',  // TODO: use schema.org to determine this accurately
+            published: '2024-01-03T22:10:00.000Z',
             url,
         });
     });
+
+
+    test('on Annual Reviews journal', async () => {
+        const url = 'https://www.annualreviews.org/doi/abs/10.1146/annurev-polisci-052209-131042';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Scott D. Sagan',
+            journal: 'Annual Review of Political Science',
+            language: 'en',
+            title: 'The Causes of Nuclear Weapons Proliferation',
+            published: '2011-05-09T00:00:00.000Z',
+            doi: '10.1146/annurev-polisci-052209-131042',
+            url,
+        });
+    });
+
+    test('on Springer journal', async () => {
+        const url = 'https://link.springer.com/article/10.1007/s10071-006-0033-8';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: ['Ludwig Huber', 'Gyula K. Gajdon'],
+            journal: 'Animal Cognition',
+            language: 'en',
+            title: 'Technical intelligence in animals: the kea model',
+            published: '2006-08-15T00:00:00.000Z',
+            doi: '10.1007/s10071-006-0033-8',
+            url,
+        });
+    });
+
+    test('on NZ Herald (free article)', async () => {
+        const url = 'https://www.nzherald.co.nz/nz/rowen-aupouri-death-mother-waiting-on-answers-after-sons-unexplained-death-in-hawkes-bay/DSCWIRHAHBGFNC6VLC5CAWILYQ/';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'James Pocock',
+            provider: 'NZ Herald',
+            language: 'en',
+            title: 'Rowen Aupouri death: Mother waiting on answers after son’s ‘unexplained’ death in Hawke’s Bay',
+            published: '2024-01-05T01:15:47.218Z',
+        });
+        expect(scrapeResult.urlAccess).to.be.undefined;
+    });
+
+    test('on NZ Herald (paid article)', async () => {
+        const url = 'https://www.nzherald.co.nz/business/russian-owned-new-zealand-registered-company-credomax-an-unusual-liquidation/W7U3OCRS7BBJDK27XDUE34F6QU/';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Anne Gibson',
+            provider: 'NZ Herald',
+            language: 'en',
+            title: 'Russian-owned New Zealand-registered company Credomax - an unusual liquidation',
+            published: '2024-01-04T17:51:24.917Z',
+            urlAccess: 'subscription',
+        });
+    });
+
+    // TODO: capture JSTOR data from google analytics
+    // test('on JSTOR', async () => {
+    //     const url = 'https://www.jstor.org/stable/41287979';
+    //     await page.goto(url);
+    //     await page.addScriptTag({ path: './dist/parsers.js' });
+    //     const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+    //     expect(scrapeResult).to.deep.include({
+    //         author: 'Edwina Palmer',
+    //         provider: 'Bulletin of the School of Oriental and African Studies, University of London',
+    //         language: 'en',
+    //         title: `A poem to carp about? Poem 16-3828 of the "Man'yōshū" collection`,
+    //         published: '2011-01-01T00:00:00.000Z',
+    //         doi: '10.2307/41287979',
+    //         urlAccess: 'subscription',
+    //         jstor: '41287979',
+    //         volume: '74',
+    //         pages: '417-436',
+    //         url,
+    //     });
+    // });
 
     beforeEach(async () => {
         browser = await playwright['firefox'].launch({ headless: true });

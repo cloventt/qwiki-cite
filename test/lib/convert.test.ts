@@ -60,7 +60,18 @@ describe("page scrape metadata conversion", () => {
                 provider: 'Metal Madness Magazine'
             },
             expected: {
-                website: 'Metal Madness Magazine',
+                work: 'Metal Madness Magazine',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'adds journal over website',
+            input: {
+                journal: 'Journal of Modern Music',
+                provider: 'Metal Madness Magazine'
+            },
+            expected: {
+                work: 'Journal of Modern Music',
                 accessDate: '2023-12-25',
             },
         },
@@ -123,6 +134,19 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
+            description: 'handles multiple authors in an array',
+            input: {
+                author: ['David Palmer', 'John Tewilliger']
+            },
+            expected: {
+                first1: 'David',
+                last1: 'Palmer',
+                first2: 'John',
+                last2: 'Tewilliger',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
             description: 'ignores titles in author names',
             input: {
                 author: 'Dr. Richard Hitchings'
@@ -158,7 +182,7 @@ describe("page scrape metadata conversion", () => {
                 author: 'Stuff writers'
             },
             expected: {
-                website: 'Stuff',
+                work: 'Stuff',
                 accessDate: '2023-12-25',
             },
         },
@@ -250,6 +274,16 @@ describe("page scrape metadata conversion", () => {
             },
             expected: {
                 page: '7',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'grabs url-access if present',
+            input: {
+                urlAccess: 'subscription',
+            },
+            expected: {
+                urlAccess: 'subscription',
                 accessDate: '2023-12-25',
             },
         },

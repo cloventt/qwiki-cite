@@ -8,7 +8,7 @@
     "compilerOptions": {
         "lib": [
             "dom",
-            "ES2020.Intl",
+            "ES2022.Intl",
         ],
         "target": "ES2022",
         "module": "NodeNext",
