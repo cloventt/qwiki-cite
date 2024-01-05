@@ -20,11 +20,13 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                 rules: [
                     ['h3.article-title', (element: HTMLElement) => element.textContent.trim().split('\n')[0]],
                     ['meta[name="dc.Title"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
             author: {
                 rules: [
                     ['meta[name="dc.Creator"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_author"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
             language: {
@@ -32,14 +34,25 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="dc.Language"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
+            volume: {
+                rules: [
+                    ['meta[name="citation_volume"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
             doi: {
                 rules: [
                     ['meta[name="dc.Identifier"][scheme="doi"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
+            issn: {
+                rules: [
+                    ['meta[name="citation_issn"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
             journal: {
                 rules: [
                     ['div.journal-issue', (element: HTMLElement) => element?.textContent?.trim()],
+                    ['meta[name="citation_journal_title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
             provider: {
@@ -48,6 +61,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['div.site-name-en', (element: HTMLElement) => element.innerHTML],
                     ['meta[name="dc.Publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
@@ -89,6 +103,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                         return rawPubString[rawPubString.length - 1]?.trim();
                     }],
                     ['meta[name="dc.Date"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_year"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }

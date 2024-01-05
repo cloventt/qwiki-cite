@@ -141,6 +141,23 @@ describe("page scraping works as expected", () => {
         });
     });
 
+    test('on Project Muse journal article', async () => {
+        const url = 'https://muse.jhu.edu/article/446776';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Robert Jervis',
+            journal: 'International Security',
+            provider: 'The MIT Press',
+            issn: '1531-4804',
+            volume: '13',
+            language: 'en',
+            title: 'The Political Effects of Nuclear Weapons: A Comment',
+            published: '1988-01-01T00:00:00.000Z',
+        });
+    });
+
     // TODO: capture JSTOR data from google analytics
     // test('on JSTOR', async () => {
     //     const url = 'https://www.jstor.org/stable/41287979';
