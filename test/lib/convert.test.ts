@@ -65,13 +65,14 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'adds journal over website',
+            description: 'adds journal and publisher',
             input: {
                 journal: 'Journal of Modern Music',
-                provider: 'Metal Madness Magazine'
+                provider: 'Metal Madness Press'
             },
             expected: {
                 work: 'Journal of Modern Music',
+                publisher: 'Metal Madness Press',
                 accessDate: '2023-12-25',
             },
         },
@@ -285,6 +286,31 @@ describe("page scrape metadata conversion", () => {
             expected: {
                 urlAccess: 'subscription',
                 accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'handles a journal article correctly',
+            input: {
+                author: 'Robert Jervis',
+                journal: 'International Security',
+                provider: 'The MIT Press',
+                issn: '1531-4804',
+                volume: '13',
+                language: 'en',
+                title: 'The Political Effects of Nuclear Weapons: A Comment',
+                published: '1988-01-01T00:00:00.000Z',
+            },
+            expected: {
+                first1: 'Robert',
+                last1: 'Jervis',
+                publisher: 'The MIT Press',
+                issn: '1531-4804',
+                work: 'International Security',
+                language: 'en',
+                date: '1988-01-01', // TODO: strip to just date
+                volume: '13', 
+                accessDate: '2023-12-25',
+                title: 'The Political Effects of Nuclear Weapons: A Comment',
             },
         },
     ];

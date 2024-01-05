@@ -79,8 +79,11 @@ export class QWikiCite {
     if (metadata.provider != null) {
       if (metadata.type === 'book') {
         citationTemplate.publisher = metadata.provider?.trim()
+      } else if (metadata.journal != null) {
+        citationTemplate.work = metadata.journal.trim();
+        citationTemplate.publisher = metadata.provider?.trim();
       } else {
-        citationTemplate.work = metadata.journal?.trim() || metadata.provider?.trim()
+        citationTemplate.work = metadata.provider?.trim()
       }
     }
 
