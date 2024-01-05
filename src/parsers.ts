@@ -19,6 +19,27 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
             title: {
                 rules: [
                     ['h3.article-title', (element: HTMLElement) => element.textContent.trim().split('\n')[0]],
+                    ['meta[name="dc.Title"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
+            author: {
+                rules: [
+                    ['meta[name="dc.Creator"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
+            language: {
+                rules: [
+                    ['meta[name="dc.Language"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
+            doi: {
+                rules: [
+                    ['meta[name="dc.Identifier"][scheme="doi"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
+            journal: {
+                rules: [
+                    ['div.journal-issue', (element: HTMLElement) => element?.textContent?.trim()],
                 ]
             },
             provider: {
@@ -26,6 +47,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['span[data-testid*="publisher"]', (element: HTMLElement) => element.textContent.split(',')[0]?.trim()],
                     ['meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['div.site-name-en', (element: HTMLElement) => element.innerHTML],
+                    ['meta[name="dc.Publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
@@ -36,7 +58,6 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                         return rawPubString[rawPubString.length - 2]?.trim();
                     }],
                 ],
-                defaultValue: (context) => parseUrl(context.url),
             },
             pageNumber: {
                 rules: [
@@ -67,6 +88,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                         const rawPubString = element.textContent.split(',');
                         return rawPubString[rawPubString.length - 1]?.trim();
                     }],
+                    ['meta[name="dc.Date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }
@@ -160,7 +182,7 @@ export const scrapePage = async (message: any): Promise<MetaData> => {
     });
 };
 declare global {
-    interface Window { scrapePage: Function; }
+    interface Window { scrapePage: Function; gaData: any; }
 }
 
 // exposed for testing

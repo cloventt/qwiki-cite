@@ -9,7 +9,7 @@ export interface CitationTemplate {
   url?: string;
   title?: string;
   urlAccess?: string;
-  website?: string;
+  work?: string;
   author?: string;
   last?: string;
   first?: string;
@@ -18,7 +18,8 @@ export interface CitationTemplate {
   language?: string;
   archiveUrl?: string;
   archiveDate?: string;
-
+  
+  website?: string;
   authorLink?: string;
   last1?: string;
   first1?: string;
@@ -65,7 +66,7 @@ export interface CitationTemplate {
   ssrn?: string;
   zbl?: string;
   id?: string;
-  urlStatus?: string;
+  urlStatus?: 'dead' | 'live' | 'deviated' | 'unfit' | 'usurped';
   via?: string;
   quote?: string;
   ref?: string;

@@ -25,12 +25,15 @@ const objectHandlers: {[k: string]: (obj: any) => MetaData} = {
             a.volume = obj['isPartOf'].volumeNumber;
         }
 
+        if ('sameAs' in obj && typeof obj['sameAs'] === 'string' && obj['sameAs'].startsWith('https://doi.org/')) {
+            a.doi = obj['sameAs'].replace('https://doi.org/', '');
+        }
+
         return removeUndefined(a);
     },
     'NewsArticle': (obj) => {
         const a = parseCommonFeatures(obj);
         a.type = 'news';
-        a.urlAccess = obj.isAccessibleForFree ? 'subscription' : undefined;
 
         return removeUndefined(a);
     },
