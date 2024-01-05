@@ -89,8 +89,8 @@ export class QWikiCite {
     if (metadata.issn != null) citationTemplate.issn = (metadata.issn as string).trim()
     if (metadata.doi != null) citationTemplate.doi = (metadata.doi as string).trim()
     if (metadata.volume != null) citationTemplate.volume = (metadata.volume as string).trim()
-    if (metadata.location != null) citationTemplate.location = (metadata.location as string).trim()
-    if (metadata.urlAccess != null) citationTemplate.urlAccess = (metadata.urlAccess as string).trim()
+    if (metadata.location != null) citationTemplate.publicationPlace = (metadata.location as string).trim()
+    if (metadata.urlAccess != null) citationTemplate.urlAccess = metadata.urlAccess
     // if (['book', 'journal'].includes(metadata.type)) citationTemplate.type = (metadata.type as string).trim()
 
     const parseAuthor = (input: string): [string?, string?] => {
@@ -125,7 +125,7 @@ export class QWikiCite {
       // split into multiple authors
       const [firstAuthor, secondAuthor] = Array.isArray(metadata.author) ? metadata.author : (metadata.author as string).trim().replace(/[([].*[)\]]/g, '').split(/\sand|[&]|[,]|[;]|[|]|via\s/);
 
-      if (firstAuthor != null && isMaybeAName(firstAuthor, citationTemplate.website)) {
+      if (firstAuthor != null && isMaybeAName(firstAuthor, citationTemplate.work)) {
         const [first1, last1] = parseAuthor(firstAuthor);
         if (first1 && last1) {
           citationTemplate.first1 = first1
@@ -133,7 +133,7 @@ export class QWikiCite {
         }
       }
 
-      if (secondAuthor != null && isMaybeAName(secondAuthor, citationTemplate.website)) {
+      if (secondAuthor != null && isMaybeAName(secondAuthor, citationTemplate.work)) {
         const [first2, last2] = parseAuthor(secondAuthor);
         if (first2 && last2) {
           citationTemplate.first2 = first2
