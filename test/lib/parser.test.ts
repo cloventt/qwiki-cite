@@ -1,9 +1,6 @@
 import { describe, test } from 'mocha'
 import { expect } from 'chai'
 import * as playwright from '@playwright/test';
-import moment from 'moment';
-
-const TEST_TIMEOUT = 30000;
 
 let page: playwright.Page; 
 let browser: playwright.Browser;
@@ -39,11 +36,11 @@ describe("page scraping works as expected", () => {
         const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
         expect(scrapeResult).to.deep.include({
             author: 'Geoffrey W. Rice',
-            publisher: 'Canterbury University Press',
+            provider: 'Canterbury University Press',
             location: 'NZ',  // can't really do much better than this
             language: 'en',
             title: 'Black November : the 1918 influenza pandemic in New Zealand',
-            published: '2005',
+            published: '2005-01-01T00:00:00.000Z',
             type: 'book',
             isbn: '9781877257353',
             url: 'https://search.worldcat.org/title/1250610805',
@@ -71,11 +68,11 @@ describe("page scraping works as expected", () => {
         await page.addScriptTag({ path: './dist/parsers.js' });
         const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
         expect(scrapeResult).to.deep.include({
-            // author: ['Jan Wolfe', 'Jess Bravin'],  // TODO: use schema.org to determine this accurately
-            // provider: 'The Wall Street Journal', // TODO: use schema.org to determine this accurately
-            language: 'en',
+            author: ['Jan Wolfe', 'Jess Bravin'],  // TODO: use schema.org to determine this accurately
+            provider: 'The Wall Street Journal', // TODO: use schema.org to determine this accurately
+            language: 'en-US',
             title: 'Trump Asks Supreme Court to Overturn His Removal From Colorado Primary Ballot',
-            // published: '2024-01-03T22:10:00.000Z',  // TODO: use schema.org to determine this accurately
+            published: '2024-01-03T22:10:00.000Z',  // TODO: use schema.org to determine this accurately
             url,
         });
     });
