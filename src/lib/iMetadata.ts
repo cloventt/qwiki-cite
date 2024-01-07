@@ -5,5 +5,7 @@ export interface MetaData extends exMetaData {
     urlAccess?: 'subscription' | 'registration' | 'limited' | 'free';
     journal?: string;
     volume?: string;
+    issue?: string;
+    pmid?: string;
 
 }
