@@ -39,9 +39,20 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="citation_volume"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
+            issue: {
+                rules: [
+                    ['meta[name="citation_issue"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
+            urlAccess: {
+                rules: [
+                    ['meta[name="DC.AccessRights"][content]', (element: HTMLElement) => element.getAttribute('content')?.toLowerCase() === 'restricted' ? 'subscription' : undefined],
+                ]
+            },
             doi: {
                 rules: [
                     ['meta[name="dc.Identifier"][scheme="doi"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_doi"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
             issn: {
@@ -90,6 +101,11 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     }],
                 ]
             },
+            pmid: {
+                rules : [
+                    ['meta[name="citation_pmid"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                ]
+            },
             published: {
                 rules: [
                     // rule for Papers Past
@@ -104,6 +120,10 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     }],
                     ['meta[name="dc.Date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_year"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_publication_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_online_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="article:published_time"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }
