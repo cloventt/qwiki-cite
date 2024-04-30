@@ -84,6 +84,7 @@ export interface CitationTemplate {
  postscript?: string;
  ref?: string;
  urlAccess?: 'subscription' | 'registration' | 'limited' | 'free';
+ via?: string;
 
 }
 

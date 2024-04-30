@@ -313,6 +313,47 @@ describe("page scrape metadata conversion", () => {
                 title: 'The Political Effects of Nuclear Weapons: A Comment',
             },
         },
+        {
+            description: 'handles Te Ara Encyclopedia of NZ correctly',
+            input: {
+                author: 'Te Ahukaramū Charles Royal',
+                provider: 'Ministry for Culture and Heritage Te Manatu Taonga',
+                language: 'en',
+                title: 'Symbolism of trees and plants',
+                published: '2009-01-01T00:00:00.000Z',
+            },
+            expected: {
+                author: 'Te Ahukaramū Charles Royal',
+                publisher: 'Ministry for Culture and Heritage Te Manatu Taonga',
+                work: 'Te Ara Encyclopedia of New Zealand',
+                language: 'en',
+                date: '2009-01-01', // TODO: strip to just date
+                accessDate: '2023-12-25',
+                title: 'Symbolism of trees and plants',
+            },
+        },
+        {
+            description: 'handles Te Ara Encyclopedia of NZ DNZB entry correctly',
+            input: {
+                author: 'Te Ahukaramū Charles Royal',
+                provider: 'Ministry for Culture and Heritage Te Manatu Taonga',
+                work: 'Dictionary of New Zealand Biography',
+                via: 'Te Ara Encyclopedia of New Zealand',
+                language: 'en',
+                title: 'Symbolism of trees and plants',
+                published: '2009-01-01T00:00:00.000Z',
+            },
+            expected: {
+                author: 'Te Ahukaramū Charles Royal',
+                publisher: 'Ministry for Culture and Heritage Te Manatu Taonga',
+                work: 'Dictionary of New Zealand Biography',
+                via: 'Te Ara Encyclopedia of New Zealand',
+                language: 'en',
+                date: '2009-01-01', // TODO: strip to just date
+                accessDate: '2023-12-25',
+                title: 'Symbolism of trees and plants',
+            },
+        },
     ];
 
     spec.forEach((s) => {

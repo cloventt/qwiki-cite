@@ -168,9 +168,27 @@ describe("page scraping works as expected", () => {
         expect(scrapeResult).to.deep.include({
             author: 'Te Ahukaramū Charles Royal',
             provider: 'Ministry for Culture and Heritage Te Manatu Taonga',
+            work: 'Te Ara Encyclopedia of New Zealand',
             language: 'en',
-            title: 'Symbolism of trees and plants',
+            title: 'Te Waonui a Tāne – forest mythology - Symbolism of trees and plants',
             published: '2009-01-01T00:00:00.000Z',
+        });
+    });
+
+    test('on Te Ara Encyclopedia of New Zealand DNZB entry', async () => {
+        const url = 'https://teara.govt.nz/en/biographies/2t14/tawhiao-tukaroto-matutaera-potatau-te-wherowhero';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'R. T. Mahuta',
+            provider: 'Ministry for Culture and Heritage Te Manatu Taonga',
+            work: 'Dictionary of New Zealand Biography',
+            via: 'Te Ara Encyclopedia of New Zealand',
+            volume: '2',
+            language: 'en',
+            title: 'Tāwhiao, Tūkāroto Matutaera Pōtatau Te Wherowhero',
+            published: '1993-01-01T00:00:00.000Z',
         });
     });
 
