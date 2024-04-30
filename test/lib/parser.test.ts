@@ -63,20 +63,22 @@ describe("page scraping works as expected", () => {
         });
     });
 
-    test('on The Wall Street Journal', async () => {
-        const url = 'https://www.wsj.com/us-news/law/trump-asks-supreme-court-to-overturn-his-removal-from-colorado-primary-ballot-3eeaedb0';
-        await page.goto(url);
-        await page.addScriptTag({ path: './dist/parsers.js' });
-        const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
-        expect(scrapeResult).to.deep.include({
-            author: ['Jan Wolfe', 'Jess Bravin'],
-            provider: 'The Wall Street Journal',
-            language: 'en-US',
-            title: 'Trump Asks Supreme Court to Overturn His Removal From Colorado Primary Ballot',
-            published: '2024-01-03T22:10:00.000Z',
-            url,
-        });
-    });
+    // WSJ have put an anti-bot check before the page loads so they can get stuffed
+
+    // test('on The Wall Street Journal', async () => {
+    //     const url = 'https://www.wsj.com/us-news/law/trump-asks-supreme-court-to-overturn-his-removal-from-colorado-primary-ballot-3eeaedb0';
+    //     await page.goto(url);
+    //     await page.addScriptTag({ path: './dist/parsers.js' });
+    //     const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+    //     expect(scrapeResult).to.deep.include({
+    //         author: ['Jan Wolfe', 'Jess Bravin'],
+    //         provider: 'The Wall Street Journal',
+    //         language: 'en-US',
+    //         title: 'Trump Asks Supreme Court to Overturn His Removal From Colorado Primary Ballot',
+    //         published: '2024-01-03T22:10:00.000Z',
+    //         url,
+    //     });
+    // });
 
 
     test('on Annual Reviews journal', async () => {
@@ -89,7 +91,7 @@ describe("page scraping works as expected", () => {
             journal: 'Annual Review of Political Science',
             language: 'en',
             title: 'The Causes of Nuclear Weapons Proliferation',
-            published: '2011-05-09T00:00:00.000Z',
+            published: '2011-06-15T00:00:00.000Z',
             doi: '10.1146/annurev-polisci-052209-131042',
             url,
         });
@@ -155,6 +157,20 @@ describe("page scraping works as expected", () => {
             language: 'en',
             title: 'The Political Effects of Nuclear Weapons: A Comment',
             published: '1988-01-01T00:00:00.000Z',
+        });
+    });
+
+    test('on Te Ara Encyclopedia of New Zealand', async () => {
+        const url = 'https://teara.govt.nz/en/te-waonui-a-tane-forest-mythology/page-3';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Te Ahukaramū Charles Royal',
+            provider: 'Ministry for Culture and Heritage Te Manatu Taonga',
+            language: 'en',
+            title: 'Symbolism of trees and plants',
+            published: '2009-01-01T00:00:00.000Z',
         });
     });
 

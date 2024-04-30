@@ -20,12 +20,14 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                 rules: [
                     ['h3.article-title', (element: HTMLElement) => element.textContent.trim().split('\n')[0]],
                     ['meta[name="dc.Title"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="DC.title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
             author: {
                 rules: [
                     ['meta[name="dc.Creator"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="DC.contributor"][content]', (element: HTMLElement) => element.getAttribute('content').trim()],
                     ['meta[name="citation_author"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ]
             },
@@ -72,6 +74,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[property="publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['div.site-name-en', (element: HTMLElement) => element.innerHTML],
                     ['meta[name="dc.Publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="DC.publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
@@ -118,9 +121,11 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                         const rawPubString = element.textContent.split(',');
                         return rawPubString[rawPubString.length - 1]?.trim();
                     }],
+                    ['meta[name="DC.date.created"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="dc.Date"][content]', (element: HTMLElement) => element.getAttribute('content')],
-                    ['meta[name="citation_year"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="dc.date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="citation_year"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_publication_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_online_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="article:published_time"][content]', (element: HTMLElement) => element.getAttribute('content')],
