@@ -118,8 +118,9 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                         const rawPubString = element.textContent.split(',');
                         return rawPubString[rawPubString.length - 1]?.trim();
                     }],
-                    ['meta[name="dc.Date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_year"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="dc.Date"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['meta[name="dc.date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_publication_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_online_date"][content]', (element: HTMLElement) => element.getAttribute('content')],

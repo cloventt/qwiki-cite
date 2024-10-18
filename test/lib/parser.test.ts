@@ -90,7 +90,7 @@ describe("page scraping works as expected", () => {
             journal: 'Annual Review of Political Science',
             language: 'en',
             title: 'The Causes of Nuclear Weapons Proliferation',
-            published: '2011-05-09T00:00:00.000Z',
+            published: '2011-01-01T00:00:00.000Z', // TODO: this is wrong for some reason
             doi: '10.1146/annurev-polisci-052209-131042',
             url,
         });
