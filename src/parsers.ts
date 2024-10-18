@@ -207,13 +207,14 @@ export const scrapePage = async (message: any): Promise<MetaData> => {
         return scrapeJsonLd(element.textContent);
     });
 
-    const scrapeData = pageSchemaBlobs ? [domScrape, ...pageSchemaBlobs] : [domScrape];
+    const scrapeData = pageSchemaBlobs != null ? [domScrape, ...pageSchemaBlobs] : [domScrape];
 
     return Promise.all(scrapeData).then((scrapeResults) => {
-        console.log(scrapeResults)
-        return scrapeResults.reduce((resA, resB) => {
+        const combinedResults = scrapeResults.reduce((resA, resB) => {
             return { ...removeUndefined(resA), ...removeUndefined(resB) }
         })
+        console.debug("Scraped the page successfully, returning the data we collected to the extension", scrapeResults)
+        return combinedResults;
     });
 };
 declare global {

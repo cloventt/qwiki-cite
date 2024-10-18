@@ -34,5 +34,6 @@
     "build": "rm -rf dist .cache .parcel-cache && parcel build --no-cache src/manifest.json",
     "watch": "parcel watch --host localhost src/manifest.json",
     "bundle": "yarn test && yarn build && zip -j qwiki-cite-$npm_package_version.zip ./dist/*"
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

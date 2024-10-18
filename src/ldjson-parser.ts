@@ -110,6 +110,7 @@ function parseUrlAccess(value: any): boolean {
 }
 
 export function removeUndefined(obj: any): any {
+    if (obj === undefined) return {}
     return Object.fromEntries(
         Object.entries(obj).filter(([k, v]) => v !== undefined)
     );

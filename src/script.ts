@@ -113,27 +113,23 @@ async function main() {
     const currentValue = await getStoredValue(url);
     if (currentValue.accessDate == null && !url.endsWith('.pdf') && !url.endsWith('.PDF')) {
         console.debug('No previous data found in session storage, scraping page instead');
-        try {
-            const pageScrapeResult: MetaData = await browser.tabs.sendMessage(tabs[0].id!!, { url });
-            if (pageScrapeResult == null) {
-                return;
-            }
-            console.debug('Got a page scrape result', pageScrapeResult);
-
-            const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
-            citationTemplate.url = url;
-
-            if (archiveUrl != null) {
-                citationTemplate.archiveUrl = archiveUrl;
-                citationTemplate.archiveDate = `${archiveDate.slice(0, 4)}-${archiveDate.slice(4, 6)}-${archiveDate.slice(6, 8)}`;
-            }
-
-            console.debug('Generated citation template data', citationTemplate);
-
-            await updatePage(citationTemplate);
-        } catch (e: unknown) {
-            console.error('Encountered an error attempting to scrape the page', e);
+        const pageScrapeResult: MetaData = await browser.tabs.sendMessage(tabs[0].id!!, { url });
+        if (pageScrapeResult == null) {
+            return;
         }
+        console.debug('Got a page scrape result', pageScrapeResult);
+
+        const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
+        citationTemplate.url = url;
+
+        if (archiveUrl != null) {
+            citationTemplate.archiveUrl = archiveUrl;
+            citationTemplate.archiveDate = `${archiveDate.slice(0, 4)}-${archiveDate.slice(4, 6)}-${archiveDate.slice(6, 8)}`;
+        }
+
+        console.debug('Generated citation template data', citationTemplate);
+
+        await updatePage(citationTemplate);
     }
 
     if (currentValue.archiveUrl == null) {
