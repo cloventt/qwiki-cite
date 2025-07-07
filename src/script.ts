@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { QWikiCite } from './lib/static';
 import { MetaData } from 'metadata-scraper/lib/types'
 import { CitationTemplate } from './lib/ICitationTemplate';
+import { staticFieldsMap } from './lib/static-fields';
 
 function isEmpty(obj) {
     for (var x in obj) { return false; }
@@ -119,12 +120,17 @@ async function main() {
         }
         console.debug('Got a page scrape result', pageScrapeResult);
 
-        const citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
+        let citationTemplate = QWikiCite.scrapedMetadataToCitation(pageScrapeResult);
         citationTemplate.url = url;
 
         if (archiveUrl != null) {
             citationTemplate.archiveUrl = archiveUrl;
             citationTemplate.archiveDate = `${archiveDate.slice(0, 4)}-${archiveDate.slice(4, 6)}-${archiveDate.slice(6, 8)}`;
+        }
+
+        if (staticFieldsMap[new URL(url).hostname]) {
+            // apply statuc overrides if any exist
+            citationTemplate = {...citationTemplate, ...staticFieldsMap[new URL(url).hostname]}
         }
 
         console.debug('Generated citation template data', citationTemplate);
