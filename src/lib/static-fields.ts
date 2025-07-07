@@ -1,0 +1,13 @@
+import { CitationTemplate } from "./ICitationTemplate";
+
+/**
+ * The key us a URI path, not including the protocal
+ * 
+ * The value is CitationTemplate values to override other values
+ * that were determined from previous steps.
+ */
+export const staticFieldsMap: {[uri: string]: CitationTemplate} = {
+    'paperspast.natlib.govt.nz': {
+        via: 'PapersPast'
+    }
+}

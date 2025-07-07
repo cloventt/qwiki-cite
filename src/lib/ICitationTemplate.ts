@@ -84,7 +84,7 @@ export interface CitationTemplate {
  postscript?: string;
  ref?: string;
  urlAccess?: 'subscription' | 'registration' | 'limited' | 'free';
-
+ via?: string,
 }
 
 export type CitationTemplateKeys = { [Property in keyof CitationTemplate]?: boolean };
