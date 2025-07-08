@@ -8,6 +8,12 @@ import { CitationTemplate } from "./ICitationTemplate";
  */
 export const staticFieldsMap: {[uri: string]: CitationTemplate} = {
     'paperspast.natlib.govt.nz': {
-        via: 'PapersPast'
+        via: 'PapersPast',
+    },
+    'www.pressreader.com': {
+        via: 'PressReader'
+    },
+    'stuff.pressreader.com': {
+        via: 'PressReader',
     }
 }
