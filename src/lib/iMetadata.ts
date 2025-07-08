@@ -7,5 +7,6 @@ export interface MetaData extends exMetaData {
     volume?: string;
     issue?: string;
     pmid?: string;
+    via?: string;
 
 }
