@@ -96,6 +96,7 @@ export class QWikiCite {
     if (metadata.urlAccess != null) citationTemplate.urlAccess = metadata.urlAccess
     if (metadata.issue != null) citationTemplate.issue = metadata.issue;
     if (metadata.pmid != null) citationTemplate.pmid = metadata.pmid;
+    if (metadata.via != null) citationTemplate.via = metadata.via;
     // if (['book', 'journal'].includes(metadata.type)) citationTemplate.type = (metadata.type as string).trim()
 
     const parseAuthor = (input: string): [string?, string?] => {

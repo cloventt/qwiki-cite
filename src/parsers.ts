@@ -4,6 +4,8 @@ import { parseUrl } from 'metadata-scraper/lib/utils';
 import moment from 'moment';
 import { removeUndefined, scrapeJsonLd } from './ldjson-parser';
 
+const teararegex = /.*\n([\w\s.\-]*). '([\w\s.\-,]*)', ([\w\s]*), first published in (\d{4}).*(Te Ara - the Encyclopedia of New Zealand).*/
+
 /**
  * Lightly modified from https://github.com/BetaHuhn/metadata-scraper/blob/master/src/index.ts
  */
@@ -24,6 +26,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['h1[data-article-title="true"][-nd-tap-highlight-class-name="active"]', (element: HTMLElement) => element.innerText], // PressReader textview
                     ['h6.pt-4', (element: HTMLElement) => element.innerText], // Heritage NZ
                     ['h1.display-title span.field--name-field-display-title', (element: HTMLElement) => element.innerText], // Ministry of Health
+                    ['div.citation p', (element: HTMLElement) => element.innerText.split(',')[1]], // Te Ara
                 ]
             },
             author: {
@@ -31,6 +34,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="dc.Creator"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_author"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['li.art-author', (element: HTMLElement) => element.innerText],
+                    ['div.citation p:last-of-type', (element: HTMLElement) => element.innerText.replace('Story by ', '').split(',')[0]], // Te Ara
                 ]
             },
             language: {
@@ -79,6 +83,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="citation_publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['div[data-bind="text:issuename"]', (element: HTMLElement) => element.innerText], // PressReader textview
                     ['span[data-bind="html: displayHeader"].toolbar-title', (element: HTMLElement) => element.innerHTML.split(' <')[0]],
+                    ['div.citation p', (element: HTMLElement) => element.innerText.split(',')[2]], // Te Ara
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
@@ -135,8 +140,13 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['span[data-bind="html: displayHeader"].toolbar-title em', (element: HTMLElement) => element.innerText],
                     ['time time', (element: HTMLElement) => element.getAttribute('datetime')], // The Beehive
                     ['div.field--name-field-issue-date div.field__item', (element: HTMLElement) => element.innerText], // Ministry of Health
+                    ['div.citation p:last-of-type', (element: HTMLElement) => element.innerText.split('published '[-1])], // Te Ara
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
+            },
+            via: {
+                rules: [
+                ]
             }
         }
     }
