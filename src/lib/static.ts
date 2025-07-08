@@ -107,7 +107,7 @@ export class QWikiCite {
         return [];
       }
 
-      return [parsedName.first, parsedName.last]
+      return [parsedName.first + ' ' + parsedName.middle, parsedName.last]
     }
 
     const isMaybeAName = (possibleName: string, websiteName?: string): boolean => {
