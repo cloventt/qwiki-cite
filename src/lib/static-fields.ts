@@ -15,5 +15,8 @@ export const staticFieldsMap: {[uri: string]: CitationTemplate} = {
     },
     'stuff.pressreader.com': {
         via: 'PressReader',
+    },
+    'www.heritage.org.nz': {
+        work: 'Heritage New Zealand',
     }
 }
