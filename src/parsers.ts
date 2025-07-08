@@ -132,6 +132,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="article:published_time"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['div[data-bind="text:issuedate"]', (element: HTMLElement) => element.innerHTML], // PressReader textview
                     ['span[data-bind="html: displayHeader"].toolbar-title em', (element: HTMLElement) => element.innerText],
+                    ['time time', (element: HTMLElement) => element.getAttribute('datetime')], // The Beehive
 
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
