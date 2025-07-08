@@ -23,6 +23,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="citation_title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['h1[data-article-title="true"][-nd-tap-highlight-class-name="active"]', (element: HTMLElement) => element.innerText], // PressReader textview
                     ['h6.pt-4', (element: HTMLElement) => element.innerText], // Heritage NZ
+                    ['h1.display-title span.field--name-field-display-title', (element: HTMLElement) => element.innerText], // Ministry of Health
                 ]
             },
             author: {
@@ -133,7 +134,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['div[data-bind="text:issuedate"]', (element: HTMLElement) => element.innerHTML], // PressReader textview
                     ['span[data-bind="html: displayHeader"].toolbar-title em', (element: HTMLElement) => element.innerText],
                     ['time time', (element: HTMLElement) => element.getAttribute('datetime')], // The Beehive
-
+                    ['div.field--name-field-issue-date div.field__item', (element: HTMLElement) => element.innerText], // Ministry of Health
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }
