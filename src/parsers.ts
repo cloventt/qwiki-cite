@@ -21,12 +21,14 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['h3.article-title', (element: HTMLElement) => element.textContent.trim().split('\n')[0]],
                     ['meta[name="dc.Title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_title"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['h1[data-article-title="true"][-nd-tap-highlight-class-name="active"]', (element: HTMLElement) => element.innerText], // PressReader textview
                 ]
             },
             author: {
                 rules: [
                     ['meta[name="dc.Creator"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_author"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['li.art-author', (element: HTMLElement) => element.innerText],
                 ]
             },
             language: {
@@ -73,6 +75,8 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['div.site-name-en', (element: HTMLElement) => element.innerHTML],
                     ['meta[name="dc.Publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_publisher"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['div[data-bind="text:issuename"]', (element: HTMLElement) => element.innerText], // PressReader textview
+                    ['span[data-bind="html: displayHeader"].toolbar-title', (element: HTMLElement) => element.innerHTML.split(' <')[0]],
                 ],
                 defaultValue: (context) => parseUrl(context.url),
             },
@@ -125,6 +129,9 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="citation_publication_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_online_date"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="article:published_time"][content]', (element: HTMLElement) => element.getAttribute('content')],
+                    ['div[data-bind="text:issuedate"]', (element: HTMLElement) => element.innerHTML], // PressReader textview
+                    ['span[data-bind="html: displayHeader"].toolbar-title em', (element: HTMLElement) => element.innerText],
+
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
             }
