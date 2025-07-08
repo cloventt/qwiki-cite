@@ -18,5 +18,8 @@ export const staticFieldsMap: {[uri: string]: CitationTemplate} = {
     },
     'www.heritage.org.nz': {
         work: 'Heritage New Zealand',
+    },
+    'www.beehive.govt.nz': {
+        publisher: 'New Zealand Government',
     }
 }
