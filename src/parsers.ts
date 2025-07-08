@@ -22,6 +22,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="dc.Title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_title"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['h1[data-article-title="true"][-nd-tap-highlight-class-name="active"]', (element: HTMLElement) => element.innerText], // PressReader textview
+                    ['h6.pt-4', (element: HTMLElement) => element.innerText], // Heritage NZ
                 ]
             },
             author: {
