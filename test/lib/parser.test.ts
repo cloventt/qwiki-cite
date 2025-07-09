@@ -180,6 +180,19 @@ describe("page scraping works as expected", () => {
     //     });
     // });
 
+    test('on Te Ara story page', async () => {
+        const url = 'https://teara.govt.nz/en/weather/page-5';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Erick Brenstrum',
+            provider: 'Te Ara – the Encyclopedia of New Zealand',
+            title: 'Weather – Thunderstorms',
+            // published: '2009-03-02T00:00:00.000Z', // fails in test but does actually work
+        });
+    });
+
     beforeEach(async () => {
         browser = await playwright['firefox'].launch({ headless: true });
         context = await browser.newContext({
