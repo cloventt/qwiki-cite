@@ -122,7 +122,19 @@ export class QWikiCite {
         'library',
       ];
 
-      websiteName?.split(' ').map((s) => s.toLowerCase()).forEach((s) => suspiciousStrings.push(s));
+      const notSusStrings = [
+        'of',
+        'the',
+        'in',
+        'a',
+        'to',
+        'an',
+        'on',
+        'for',
+        'by',
+      ]
+
+      websiteName?.split(' ').map((s) => s.toLowerCase()).forEach((s) => !notSusStrings.includes(s) && suspiciousStrings.push(s));
 
       return suspiciousStrings.every((s) => possibleName.toLowerCase().indexOf(s) < 0);
     }
