@@ -98,12 +98,34 @@ describe("page scrape metadata conversion", () => {
             },
         },
         {
-            description: 'ignores middle names',
+            description: 'preserves middle names',
             input: {
                 author: 'John Satchmo Tewilliger'
             },
             expected: {
-                first1: 'John',
+                first1: 'John Satchmo',
+                last1: 'Tewilliger',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'preserves middle initials',
+            input: {
+                author: 'John D. Tewilliger'
+            },
+            expected: {
+                first1: 'John D.',
+                last1: 'Tewilliger',
+                accessDate: '2023-12-25',
+            },
+        },
+        {
+            description: 'preserves first initials',
+            input: {
+                author: 'J. D. Tewilliger'
+            },
+            expected: {
+                first1: 'J. D.',
                 last1: 'Tewilliger',
                 accessDate: '2023-12-25',
             },
