@@ -24,5 +24,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: yarn install
+    - run: yarn playwright install-deps
     - run: yarn build
     - run: yarn test
