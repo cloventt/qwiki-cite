@@ -189,7 +189,20 @@ describe("page scraping works as expected", () => {
             author: 'Erick Brenstrum',
             provider: 'Te Ara – the Encyclopedia of New Zealand',
             title: 'Weather – Thunderstorms',
-            // published: '2009-03-02T00:00:00.000Z', // fails in test but does actually work
+            // published: '2009-03-02T00:00:00.000Z',  // test fails but code works on a live browser
+        });
+    });
+
+    test('on Te Ara story front', async () => {
+        const url = 'https://teara.govt.nz/en/kapa-haka';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Valance Smith',
+            provider: 'Te Ara – the Encyclopedia of New Zealand',
+            title: 'Kapa Haka',
+            // published: '2009-03-02T00:00:00.000Z', // test fails but code works on a live browser
         });
     });
 

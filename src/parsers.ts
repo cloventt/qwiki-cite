@@ -27,6 +27,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['h6.pt-4', (element: HTMLElement) => element.innerText], // Heritage NZ
                     ['h1.display-title span.field--name-field-display-title', (element: HTMLElement) => element.innerText], // Ministry of Health
                     ['body.node--type-teara-story-page div.citation p', (element: HTMLElement) => element.innerText.split(',')[1].trim()], // Te Ara
+                    ['body.node--type-teara-story-front div.citation p', (element: HTMLElement) => element.innerText.split(',')[1].trim()], // Te Ara
                     ['body.node--type-teara-biography div.citation', (element: HTMLElement) => element.innerText.match(dnzbregex)[2].trim()], // Te Ara DNZB
                 ]
             },
@@ -35,7 +36,8 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['meta[name="dc.Creator"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['meta[name="citation_author"][content]', (element: HTMLElement) => element.getAttribute('content')],
                     ['li.art-author', (element: HTMLElement) => element.innerText],
-                    ['div.citation p:last-of-type', (element: HTMLElement) => element.innerText.replace('Story by ', '').split(',')[0].trim()], // Te Ara
+                    ['body.node--type-teara-story-page div.citation p:last-of-type', (element: HTMLElement) => element.innerText.replace('Story by ', '').split(',')[0].trim()], // Te Ara
+                    ['body.node--type-teara-story-front div.citation p:last-of-type', (element: HTMLElement) => element.innerText.replace('Story by ', '').split(',')[0].trim()], // Te Ara
                     ['body.node--type-teara-biography div.citation', (element: HTMLElement) => element.innerText.match(dnzbregex)[1].trim()], // Te Ara DNZB
                 ]
             },
@@ -86,6 +88,7 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['div[data-bind="text:issuename"]', (element: HTMLElement) => element.innerText], // PressReader textview
                     ['span[data-bind="html: displayHeader"].toolbar-title', (element: HTMLElement) => element.innerHTML.split(' <')[0]],
                     ['body.node--type-teara-story-page div.citation p', (element: HTMLElement) => element.innerText.split(',')[2].trim()], // Te Ara
+                    ['body.node--type-teara-story-front div.citation p', (element: HTMLElement) => element.innerText.split(',')[2].trim()], // Te Ara
                     ['body.node--type-teara-biography div.citation', (element: HTMLElement) => element.innerText.match(dnzbregex)[3].trim()], // Te Ara DNZB
                 ],
                 defaultValue: (context) => parseUrl(context.url),
@@ -143,7 +146,8 @@ const scrapeDOM = function (url: string, inputOptions: Partial<Options> = {}): P
                     ['span[data-bind="html: displayHeader"].toolbar-title em', (element: HTMLElement) => element.innerText],
                     ['time time', (element: HTMLElement) => element.getAttribute('datetime')], // The Beehive
                     ['div.field--name-field-issue-date div.field__item', (element: HTMLElement) => element.innerText], // Ministry of Health
-                    ['body.node--type-teara-story-page div.citation', (element: HTMLElement) => element.innerText.match(dnzbregex)], // Te Ara
+                    ['body.node--type-teara-story-page div.citation', (element: HTMLElement) => element.innerText.split('published ').at(1).trim()], // Te Ara
+                    ['body.node--type-teara-story-front div.citation', (element: HTMLElement) => element.innerText.split('published ').at(1).trim()], // Te Ara
                     ['body.node--type-teara-biography div.citation', (element: HTMLElement) => element.innerText.match(dnzbregex)[4].trim()], // Te Ara DNZB
                 ],
                 processor: (value: any) => moment.utc(value.toString()).toISOString() || undefined
