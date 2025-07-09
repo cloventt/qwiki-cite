@@ -140,40 +140,55 @@ async function main() {
     }
 
     if (currentValue.archiveUrl == null) {
-        console.info('Looking for (or creating) an archive on wayback')
+        const statusArea = document.getElementById('status-area') as HTMLSpanElement
+        try {
+            console.info('Looking for (or creating) an archive on wayback')
+            statusArea.textContent = 'Finding archive...'
 
-        const availabilityRequest = await fetch(`http://archive.org/wayback/available?url=${url}`, {cache: "reload"});
-        const availabilityResponse = await availabilityRequest.json();
-        console.log(availabilityResponse);
-        if (!isEmpty(availabilityResponse['archived_snapshots'])) {
-            const ts = availabilityResponse["archived_snapshots"]["closest"]["timestamp"];
-            const archiveUrl = availabilityResponse["archived_snapshots"]["closest"]["url"];
-            if (moment.utc().subtract(30, 'days').isBefore(moment(ts, 'YYYYMMDDhhmmss'))) {
-                // the archive is pretty recent so we can just reuse that
-                console.info(`Found a fairly recent archive to return`)
+            const availabilityRequest = await fetch(`http://archive.org/wayback/available?url=${url}`, {cache: "reload"});
+
+            const availabilityResponse = await availabilityRequest.json();
+            console.log(availabilityResponse);
+            if (!isEmpty(availabilityResponse['archived_snapshots'])) {
+                const ts = availabilityResponse["archived_snapshots"]["closest"]["timestamp"];
+                const archiveUrl = availabilityResponse["archived_snapshots"]["closest"]["url"];
+                if (moment.utc().subtract(30, 'days').isBefore(moment(ts, 'YYYYMMDDhhmmss'))) {
+                    // the archive is pretty recent so we can just reuse that
+                    console.info(`Found a fairly recent archive to return`)
+                    await updatePage({
+                        url,
+                        archiveUrl,
+                        archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
+                    }, true);
+                    statusArea.textContent = '';
+                    return;
+                } else {
+                    console.info(`Found an archive but it is more than 30 days old (${ts}), ignoring it`);
+                }
+            }
+
+            console.info('Creating a new archive')
+            statusArea.textContent = 'Creating archive...'
+            const createResponse = await fetch(`https://web.archive.org/save/${url}`)
+            if (!createResponse.ok) {
+                statusArea.textContent = 'Archive error';
+                return;
+            }
+
+            const waybackAnswer = createResponse.url;
+            if (waybackAnswer != null) {
+                const ts = waybackAnswer.split('/')[4];
+                console.info('Created a new archive');
                 await updatePage({
                     url,
-                    archiveUrl,
+                    archiveUrl: waybackAnswer,
                     archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
                 }, true);
-                return
-            } else {
-                console.info(`Found an archive but it is more than 30 days old (${ts}), ignoring it`);
+                statusArea.textContent = '';
             }
-        }
-
-        console.info('Creating a new archive')
-        const createResponse = await fetch(`https://web.archive.org/save/${url}`)
-
-        const waybackAnswer = createResponse.url;
-        if (waybackAnswer != null) {
-            const ts = waybackAnswer.split('/')[4]
-            console.info('Created a new archive');
-            await updatePage({
-                url,
-                archiveUrl: waybackAnswer,
-                archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
-            }, true);
+        } catch(error) {
+            console.error('Error while doing something with the Internet Archive', error);
+            statusArea.textContent = 'Archive error';
         }
     }
 
