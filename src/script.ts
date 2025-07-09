@@ -3,6 +3,7 @@ import { QWikiCite } from './lib/static';
 import { MetaData } from 'metadata-scraper/lib/types'
 import { CitationTemplate } from './lib/ICitationTemplate';
 import { staticFieldsMap } from './lib/static-fields';
+import moment from 'moment';
 
 function isEmpty(obj) {
     for (var x in obj) { return false; }
@@ -139,19 +140,41 @@ async function main() {
     }
 
     if (currentValue.archiveUrl == null) {
-        console.debug('Looking for an archive on wayback')
-        fetch(`https://archive.org/wayback/available?url=${url}`).then(async (response) => {
-            const waybackAnswer = await response.json();
-            console.log('Found an archive on wayback', waybackAnswer);
-            if (!isEmpty(waybackAnswer["archived_snapshots"])) {
-                const ts = waybackAnswer["archived_snapshots"]["closest"]["timestamp"]
+        console.info('Looking for (or creating) an archive on wayback')
+
+        const availabilityRequest = await fetch(`http://archive.org/wayback/available?url=${url}`, {cache: "reload"});
+        const availabilityResponse = await availabilityRequest.json();
+        console.log(availabilityResponse);
+        if (!isEmpty(availabilityResponse['archived_snapshots'])) {
+            const ts = availabilityResponse["archived_snapshots"]["closest"]["timestamp"];
+            const archiveUrl = availabilityResponse["archived_snapshots"]["closest"]["url"];
+            if (moment.utc().subtract(30, 'days').isBefore(moment(ts, 'YYYYMMDDhhmmss'))) {
+                // the archive is pretty recent so we can just reuse that
+                console.info(`Found a fairly recent archive to return`)
                 await updatePage({
                     url,
-                    archiveUrl: waybackAnswer["archived_snapshots"]["closest"]["url"],
+                    archiveUrl,
                     archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
                 }, true);
+                return
+            } else {
+                console.info(`Found an archive but it is more than 30 days old (${ts}), ignoring it`);
             }
-        })
+        }
+
+        console.info('Creating a new archive')
+        const createResponse = await fetch(`https://web.archive.org/save/${url}`)
+
+        const waybackAnswer = createResponse.url;
+        if (waybackAnswer != null) {
+            const ts = waybackAnswer.split('/')[4]
+            console.info('Created a new archive');
+            await updatePage({
+                url,
+                archiveUrl: waybackAnswer,
+                archiveDate: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`,
+            }, true);
+        }
     }
 
 };
