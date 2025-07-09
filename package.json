@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@parcel/config-webextension": "^2.10.3",
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.52.0",
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
     "@types/moment": "^2.13.0",
