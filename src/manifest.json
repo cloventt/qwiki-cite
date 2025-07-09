@@ -1,51 +1,69 @@
 {
-    "manifest_version": 3,
-    "name": "QWiki-Cite",
-    "version": "2.0.1",
-    "description": "Instantly generate a Wikipedia citation template for the current website.",
-    "permissions": [
-      "tabs",
-      "activeTab",
-      "storage"
-    ],
-    "host_permissions": [
-      "https://archive.org/",
-      "https://web.archive.org/"
-    ],
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["page-script.ts"]
-      },
-      {
-        "matches": ["http://cloventt.net/"],
-        "js": ["parsers.ts"]
-      }
-    ],
-    "icons": {
-      "64": "assets/icon/64.png",
-      "128": "assets/icon/128.png",
-      "256": "assets/icon/256.png"
+  "manifest_version": 3,
+  "name": "QWiki-Cite",
+  "version": "2.1.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{b3f6c765-998a-45c2-8208-365d241b93a3}",
+      "strict_min_version": "58.0"
+    }
+  },
+  "description": "Instantly generate a Wikipedia citation template for the current website.",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://archive.org/",
+    "https://web.archive.org/"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "page-script.ts"
+      ]
     },
-    "action": {
-      "default_icon": {
-        "16": "assets/icon/16.png",
-        "32": "assets/icon/32.png"
-      },
-      "default_title": "QWiki Cite",
-      "default_popup": "index.html",
-      "theme_icons": [{
+    {
+      "matches": [
+        "http://cloventt.net/"
+      ],
+      "js": [
+        "parsers.ts"
+      ]
+    }
+  ],
+  "icons": {
+    "64": "assets/icon/64.png",
+    "128": "assets/icon/128.png",
+    "256": "assets/icon/256.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "assets/icon/16.png",
+      "32": "assets/icon/32.png"
+    },
+    "default_title": "QWiki Cite",
+    "default_popup": "index.html",
+    "theme_icons": [
+      {
         "light": "assets/icon/16-light.png",
         "dark": "assets/icon/16.png",
         "size": 16
-      }, {
+      },
+      {
         "light": "assets/icon/32-light.png",
         "dark": "assets/icon/32.png",
         "size": 32
-      }, {
+      },
+      {
         "light": "assets/icon/64-light.png",
         "dark": "assets/icon/64.png",
         "size": 64
-      }]
-    }
+      }
+    ]
   }
+}
