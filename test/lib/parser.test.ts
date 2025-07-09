@@ -193,6 +193,20 @@ describe("page scraping works as expected", () => {
         });
     });
 
+    test('on Te Ara DNZB story page', async () => {
+        const url = 'https://teara.govt.nz/en/biographies/3r14/rhodes-robert-heaton';
+        await page.goto(url);
+        await page.addScriptTag({ path: './dist/parsers.js' });
+        const scrapeResult: MetaData = await page.evaluate(`window.scrapePage({url:'${url}'})`);
+        expect(scrapeResult).to.deep.include({
+            author: 'Geoffrey W. Rice',
+            provider: 'Dictionary of New Zealand Biography',
+            via: 'Te Ara - the Encyclopedia of New Zealand',
+            title: 'Rhodes, Robert Heaton',
+            published: '1996-01-01T00:00:00.000Z',
+        });
+    });
+
     beforeEach(async () => {
         browser = await playwright['firefox'].launch({ headless: true });
         context = await browser.newContext({
