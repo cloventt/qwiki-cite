@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "QWiki-Cite",
     "version": "2.0.1",
     "description": "Instantly generate a Wikipedia citation template for the current website.",
@@ -7,6 +7,10 @@
       "tabs",
       "activeTab",
       "storage"
+    ],
+    "host_permissions": [
+      "https://archive.org/",
+      "https://web.archive.org/"
     ],
     "content_scripts": [
       {
@@ -23,7 +27,7 @@
       "128": "assets/icon/128.png",
       "256": "assets/icon/256.png"
     },
-    "browser_action": {
+    "action": {
       "default_icon": {
         "16": "assets/icon/16.png",
         "32": "assets/icon/32.png"
