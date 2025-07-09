@@ -36,7 +36,7 @@ describe("page scraping works as expected", () => {
         await page.addScriptTag({ path: './dist/parsers.js' });
         const scrapeResult = await page.evaluate(`window.scrapePage({url:'${url}'})`);
         expect(scrapeResult).to.deep.include({
-            author: 'Geoffrey W. Rice',
+            author: ['Geoffrey W. Rice'],
             provider: 'Canterbury University Press',
             location: 'NZ',  // can't really do much better than this
             language: 'en',
